@@ -1,0 +1,31 @@
+@startuml Архитектура
+package "Worker" {
+    [Selenium] <- [Python обёртка]
+    note right of [Python обёртка]
+        Запускает Selenium, и управляет им запрашивая данные у ядра
+    end note
+}
+
+package "Core" {
+    grpc <.. [Python обёртка] : Задание
+    note right of grpc
+        Отвечает за взаимодействие между Worker и Core
+    end note
+    [Серв] <-> grpc
+    [Серв] <-> http
+}
+
+package "Cli" {
+    [cli] ..> http : Управляющие запросы
+    note right of [cli]
+        Управление пользователем через консоль
+    end note
+}
+
+package "Frontend" {
+    [Front] ..> http : управляющие запросы
+    note right of [Front]
+        Управление системой через vue.js на фронте
+    end note
+}
+@enduml
