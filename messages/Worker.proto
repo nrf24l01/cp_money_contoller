@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option go_package = "github.com/nrf24l01/cp_money_contoller/pb";
+
+package worker;
+
+// Сообщения
+
+message RegisterRequest {
+    string auth = 1;
+}
+
+message RegisterResponse {
+    string uuid = 1;
+    string key = 2;
+}
+
+message GetBuildingRequest {
+    string worker_uuid = 1;
+    string worker_key = 2;
+}
+
+message GetBuildingResponse {
+    string uuid = 1;
+    string task = 2;
+    string payload = 3;
+    uint64 unix_time = 4;
+}
+
+message CompleteTaskRequest {
+    string uuid = 1;
+    string payload = 2;
+    uint64 unix_time = 3;
+}
+
+message CompleteTaskResponse {
+    bool ok = 1;
+}
+
+// Сервис
+service WorkerService {
+    rpc RegisterWorker(RegisterRequest) returns (RegisterResponse);
+    rpc GetBuilding(GetBuildingRequest) returns (GetBuildingResponse);
+    rpc CompleteTask(CompleteTaskRequest) returns (CompleteTaskResponse);
+}
