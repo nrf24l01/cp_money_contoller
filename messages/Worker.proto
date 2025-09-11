@@ -7,12 +7,13 @@ package worker;
 // Сообщения
 
 message RegisterRequest {
-    string auth = 1;
+    uint64 id = 1;
 }
 
 message RegisterResponse {
     string uuid = 1;
     string key = 2;
+    uint64 id = 3;
 }
 
 message GetBuildingRequest {
