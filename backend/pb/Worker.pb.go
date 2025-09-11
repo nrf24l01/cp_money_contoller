@@ -7,11 +7,12 @@
 package pb
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -23,7 +24,7 @@ const (
 
 type RegisterRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Auth          string                 `protobuf:"bytes,1,opt,name=auth,proto3" json:"auth,omitempty"`
+	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -58,17 +59,18 @@ func (*RegisterRequest) Descriptor() ([]byte, []int) {
 	return file_Worker_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *RegisterRequest) GetAuth() string {
+func (x *RegisterRequest) GetId() uint64 {
 	if x != nil {
-		return x.Auth
+		return x.Id
 	}
-	return ""
+	return 0
 }
 
 type RegisterResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	Key           string                 `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
+	Id            uint64                 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -115,6 +117,13 @@ func (x *RegisterResponse) GetKey() string {
 		return x.Key
 	}
 	return ""
+}
+
+func (x *RegisterResponse) GetId() uint64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
 }
 
 type GetBuildingRequest struct {
@@ -345,12 +354,13 @@ var File_Worker_proto protoreflect.FileDescriptor
 
 const file_Worker_proto_rawDesc = "" +
 	"\n" +
-	"\fWorker.proto\x12\x06worker\"%\n" +
-	"\x0fRegisterRequest\x12\x12\n" +
-	"\x04auth\x18\x01 \x01(\tR\x04auth\"8\n" +
+	"\fWorker.proto\x12\x06worker\"!\n" +
+	"\x0fRegisterRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\"H\n" +
 	"\x10RegisterResponse\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x10\n" +
-	"\x03key\x18\x02 \x01(\tR\x03key\"T\n" +
+	"\x03key\x18\x02 \x01(\tR\x03key\x12\x0e\n" +
+	"\x02id\x18\x03 \x01(\x04R\x02id\"T\n" +
 	"\x12GetBuildingRequest\x12\x1f\n" +
 	"\vworker_uuid\x18\x01 \x01(\tR\n" +
 	"workerUuid\x12\x1d\n" +
