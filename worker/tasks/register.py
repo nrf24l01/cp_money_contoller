@@ -58,7 +58,7 @@ def register_user(driver: webdriver.Chrome, invite: str, email: str, password: s
 
 
 if __name__ == "__main__":
-    from . import build_config
+    from .preconfigure import build_config
     
     # Настраиваем Chrome с расширением
     options, service = build_config()
