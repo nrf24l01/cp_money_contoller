@@ -1,10 +1,8 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
-import os
 
 
 def register_user(driver: webdriver.Chrome, invite: str, email: str, password: str, name: str, birthday: str, learn_place: str, grade: int):
@@ -38,23 +36,14 @@ def register_user(driver: webdriver.Chrome, invite: str, email: str, password: s
     # Ждем решения капчи расширением (максимум 30 секунд)
     print("Ожидание решения капчи расширением...")
     for i in range(30):
-        try:
-            # Проверяем, появилась ли галочка в рекапче
-            driver.switch_to.frame(iframe)
-            checkbox = driver.find_element(By.CLASS_NAME, "recaptcha-checkbox-checkmark")
-            if checkbox.is_displayed():
-                print("Капча решена!")
-                driver.switch_to.default_content()
-                break
-            driver.switch_to.default_content()
-        except:
-            pass
-        
+        response = driver.execute_script("return document.getElementById('g-recaptcha-response').value")
+        if response:
+            print("CAPTCHA решена")
+            break
         sleep(1)
         print(f"Ожидание... {i+1}/30 секунд")
     else:
         print("Капча не была решена автоматически")
-        driver.switch_to.default_content()
     
     # Пытаемся нажать кнопку регистрации
     try:
@@ -65,13 +54,10 @@ def register_user(driver: webdriver.Chrome, invite: str, email: str, password: s
         print(f"Не удалось найти кнопку отправки: {e}")
     
     # Ждем результата
-    sleep(5)
+    sleep(100)
 
 
 if __name__ == "__main__":
-    from selenium import webdriver
-    from selenium.webdriver.chrome.service import Service
-    from webdriver_manager.chrome import ChromeDriverManager
     from . import build_config
     
     # Настраиваем Chrome с расширением
