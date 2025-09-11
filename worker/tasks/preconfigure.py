@@ -6,10 +6,13 @@ from tqdm import tqdm
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from . import inject_captcha_solver
+import subprocess
 
 def download_chrome_and_driver(driver_path, version="140.0.7339.82"):
+    os.makedirs(driver_path, exist_ok=True)
     chrome_url = f"https://storage.googleapis.com/chrome-for-testing-public/{version}/linux64/chrome-linux64.zip"
     driver_url = f"https://storage.googleapis.com/chrome-for-testing-public/{version}/linux64/chromedriver-linux64.zip"
+    print(chrome_url, driver_url)
     
     chrome_dir = os.path.join(driver_path, "chrome-linux64")
     driver_dir = os.path.join(driver_path, "chromedriver-linux64")
@@ -18,37 +21,31 @@ def download_chrome_and_driver(driver_path, version="140.0.7339.82"):
     if not os.path.exists(os.path.join(chrome_dir, "chrome")):
         chrome_zip_path = os.path.join(driver_path, "chrome-linux64.zip")
         print(f"Downloading Chrome for Testing version {version}...")
-        with requests.get(chrome_url, stream=True) as r:
-            total_size = int(r.headers.get('content-length', 0))
-            with open(chrome_zip_path, 'wb') as f:
-                with tqdm(total=total_size, unit='B', unit_scale=True, desc="Downloading Chrome") as pbar:
-                    for chunk in r.iter_content(chunk_size=1024):
-                        if chunk:
-                            f.write(chunk)
-                            pbar.update(len(chunk))
+        subprocess.run(["wget", chrome_url, "-O", chrome_zip_path], check=True)
         print("Extracting Chrome...")
-        with zipfile.ZipFile(chrome_zip_path, 'r') as zip_ref:
-            zip_ref.extractall(driver_path)
+        subprocess.run(["unzip", chrome_zip_path, "-d", driver_path], check=True)
         os.remove(chrome_zip_path)
         print("Chrome downloaded and extracted.")
+    
+    # Set permissions for Chrome
+    chrome_path = os.path.join(chrome_dir, "chrome")
+    if os.path.exists(chrome_path):
+        os.chmod(chrome_path, 0o755)
     
     # Download and extract Chromedriver if not exists
     if not os.path.exists(os.path.join(driver_dir, "chromedriver")):
         driver_zip_path = os.path.join(driver_path, "chromedriver-linux64.zip")
         print(f"Downloading Chromedriver version {version}...")
-        with requests.get(driver_url, stream=True) as r:
-            total_size = int(r.headers.get('content-length', 0))
-            with open(driver_zip_path, 'wb') as f:
-                with tqdm(total=total_size, unit='B', unit_scale=True, desc="Downloading Chromedriver") as pbar:
-                    for chunk in r.iter_content(chunk_size=1024):
-                        if chunk:
-                            f.write(chunk)
-                            pbar.update(len(chunk))
+        subprocess.run(["wget", driver_url, "-O", driver_zip_path], check=True)
         print("Extracting Chromedriver...")
-        with zipfile.ZipFile(driver_zip_path, 'r') as zip_ref:
-            zip_ref.extractall(driver_path)
+        subprocess.run(["unzip", driver_zip_path, "-d", driver_path], check=True)
         os.remove(driver_zip_path)
         print("Chromedriver downloaded and extracted.")
+    
+    # Set permissions for Chromedriver
+    driver_path_bin = os.path.join(driver_dir, "chromedriver")
+    if os.path.exists(driver_path_bin):
+        os.chmod(driver_path_bin, 0o755)
 
 def build_config(driver_path="driver", version="140.0.7339.82"):
     options = Options()
