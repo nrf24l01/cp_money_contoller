@@ -2,3 +2,4 @@ booster
 driver
 *.pyc
 *venv
+tmp
