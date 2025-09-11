@@ -1,3 +1,4 @@
 booster
 driver
 *.pyc
+*venv
