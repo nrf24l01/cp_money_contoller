@@ -63,6 +63,12 @@ def build_config(driver_path="driver", version="140.0.7339.82"):
     chromedriver_binary_path = os.path.join(full_driver_path, "chromedriver-linux64", "chromedriver")
     options.binary_location = chrome_binary_path
     
+    # Добавляем опции для имитации обычного пользователя
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+    
     options = inject_captcha_solver(options)
     service = Service(chromedriver_binary_path)
     return options, service
