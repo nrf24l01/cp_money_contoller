@@ -47,7 +47,7 @@ def download_chrome_and_driver(driver_path, version="140.0.7339.82"):
     if os.path.exists(driver_path_bin):
         os.chmod(driver_path_bin, 0o755)
 
-def build_config(driver_path="driver", version="140.0.7339.82"):
+def build_config(driver_path="driver", version="140.0.7339.82", headless=False):
     options = Options()
     current_dir = os.path.dirname(__file__)
     upper_dir = os.path.dirname(current_dir)
@@ -68,6 +68,8 @@ def build_config(driver_path="driver", version="140.0.7339.82"):
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
     options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+    if headless:
+        options.add_argument("--headless=new")
     
     options = inject_captcha_solver(options)
     service = Service(chromedriver_binary_path)
