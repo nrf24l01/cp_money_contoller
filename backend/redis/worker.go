@@ -28,3 +28,15 @@ func (r *Redis) NewWorker(id uint64) (string, string, error) {
 	}()
 	return worker.UUID, worker.Key, nil
 }
+
+func (r *Redis) ValidateWorker(uuid, key string) bool {
+	val, err := r.Client.Get(context.Background(), "worker:"+uuid).Result()
+	if err != nil {
+		return false
+	}
+	var worker models.Worker
+	if err := json.Unmarshal([]byte(val), &worker); err != nil {
+		return false
+	}
+	return worker.Key == key
+}
