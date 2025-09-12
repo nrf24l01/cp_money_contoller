@@ -28,13 +28,14 @@ message GetTaskResponse {
     uint64 unix_time = 4;
 }
 
-message CompleteTaskRequest {
+message ChangeStatusRequest {
     string uuid = 1;
     string payload = 2;
-    uint64 unix_time = 3;
+    string status = 3;
+    uint64 unix_time = 4;
 }
 
-message CompleteTaskResponse {
+message ChangeStatusResponse {
     bool ok = 1;
 }
 
@@ -42,5 +43,5 @@ message CompleteTaskResponse {
 service WorkerService {
     rpc RegisterWorker(RegisterRequest) returns (RegisterResponse);
     rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
-    rpc CompleteTask(CompleteTaskRequest) returns (CompleteTaskResponse);
+    rpc ChangeStatus(ChangeStatusRequest) returns (ChangeStatusResponse);
 }

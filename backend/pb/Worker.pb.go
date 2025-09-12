@@ -245,29 +245,30 @@ func (x *GetTaskResponse) GetUnixTime() uint64 {
 	return 0
 }
 
-type CompleteTaskRequest struct {
+type ChangeStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	Payload       string                 `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
-	UnixTime      uint64                 `protobuf:"varint,3,opt,name=unix_time,json=unixTime,proto3" json:"unix_time,omitempty"`
+	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
+	UnixTime      uint64                 `protobuf:"varint,4,opt,name=unix_time,json=unixTime,proto3" json:"unix_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CompleteTaskRequest) Reset() {
-	*x = CompleteTaskRequest{}
+func (x *ChangeStatusRequest) Reset() {
+	*x = ChangeStatusRequest{}
 	mi := &file_Worker_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CompleteTaskRequest) String() string {
+func (x *ChangeStatusRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CompleteTaskRequest) ProtoMessage() {}
+func (*ChangeStatusRequest) ProtoMessage() {}
 
-func (x *CompleteTaskRequest) ProtoReflect() protoreflect.Message {
+func (x *ChangeStatusRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_Worker_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -279,53 +280,60 @@ func (x *CompleteTaskRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CompleteTaskRequest.ProtoReflect.Descriptor instead.
-func (*CompleteTaskRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ChangeStatusRequest.ProtoReflect.Descriptor instead.
+func (*ChangeStatusRequest) Descriptor() ([]byte, []int) {
 	return file_Worker_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *CompleteTaskRequest) GetUuid() string {
+func (x *ChangeStatusRequest) GetUuid() string {
 	if x != nil {
 		return x.Uuid
 	}
 	return ""
 }
 
-func (x *CompleteTaskRequest) GetPayload() string {
+func (x *ChangeStatusRequest) GetPayload() string {
 	if x != nil {
 		return x.Payload
 	}
 	return ""
 }
 
-func (x *CompleteTaskRequest) GetUnixTime() uint64 {
+func (x *ChangeStatusRequest) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *ChangeStatusRequest) GetUnixTime() uint64 {
 	if x != nil {
 		return x.UnixTime
 	}
 	return 0
 }
 
-type CompleteTaskResponse struct {
+type ChangeStatusResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Ok            bool                   `protobuf:"varint,1,opt,name=ok,proto3" json:"ok,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CompleteTaskResponse) Reset() {
-	*x = CompleteTaskResponse{}
+func (x *ChangeStatusResponse) Reset() {
+	*x = ChangeStatusResponse{}
 	mi := &file_Worker_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CompleteTaskResponse) String() string {
+func (x *ChangeStatusResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CompleteTaskResponse) ProtoMessage() {}
+func (*ChangeStatusResponse) ProtoMessage() {}
 
-func (x *CompleteTaskResponse) ProtoReflect() protoreflect.Message {
+func (x *ChangeStatusResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_Worker_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -337,12 +345,12 @@ func (x *CompleteTaskResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CompleteTaskResponse.ProtoReflect.Descriptor instead.
-func (*CompleteTaskResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ChangeStatusResponse.ProtoReflect.Descriptor instead.
+func (*ChangeStatusResponse) Descriptor() ([]byte, []int) {
 	return file_Worker_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *CompleteTaskResponse) GetOk() bool {
+func (x *ChangeStatusResponse) GetOk() bool {
 	if x != nil {
 		return x.Ok
 	}
@@ -369,17 +377,18 @@ const file_Worker_proto_rawDesc = "" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x12\n" +
 	"\x04task\x18\x02 \x01(\tR\x04task\x12\x18\n" +
 	"\apayload\x18\x03 \x01(\tR\apayload\x12\x1b\n" +
-	"\tunix_time\x18\x04 \x01(\x04R\bunixTime\"`\n" +
-	"\x13CompleteTaskRequest\x12\x12\n" +
+	"\tunix_time\x18\x04 \x01(\x04R\bunixTime\"x\n" +
+	"\x13ChangeStatusRequest\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x18\n" +
-	"\apayload\x18\x02 \x01(\tR\apayload\x12\x1b\n" +
-	"\tunix_time\x18\x03 \x01(\x04R\bunixTime\"&\n" +
-	"\x14CompleteTaskResponse\x12\x0e\n" +
+	"\apayload\x18\x02 \x01(\tR\apayload\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\tR\x06status\x12\x1b\n" +
+	"\tunix_time\x18\x04 \x01(\x04R\bunixTime\"&\n" +
+	"\x14ChangeStatusResponse\x12\x0e\n" +
 	"\x02ok\x18\x01 \x01(\bR\x02ok2\xdb\x01\n" +
 	"\rWorkerService\x12C\n" +
 	"\x0eRegisterWorker\x12\x17.worker.RegisterRequest\x1a\x18.worker.RegisterResponse\x12:\n" +
 	"\aGetTask\x12\x16.worker.GetTaskRequest\x1a\x17.worker.GetTaskResponse\x12I\n" +
-	"\fCompleteTask\x12\x1b.worker.CompleteTaskRequest\x1a\x1c.worker.CompleteTaskResponseB+Z)github.com/nrf24l01/cp_money_contoller/pbb\x06proto3"
+	"\fChangeStatus\x12\x1b.worker.ChangeStatusRequest\x1a\x1c.worker.ChangeStatusResponseB+Z)github.com/nrf24l01/cp_money_contoller/pbb\x06proto3"
 
 var (
 	file_Worker_proto_rawDescOnce sync.Once
@@ -399,16 +408,16 @@ var file_Worker_proto_goTypes = []any{
 	(*RegisterResponse)(nil),     // 1: worker.RegisterResponse
 	(*GetTaskRequest)(nil),       // 2: worker.GetTaskRequest
 	(*GetTaskResponse)(nil),      // 3: worker.GetTaskResponse
-	(*CompleteTaskRequest)(nil),  // 4: worker.CompleteTaskRequest
-	(*CompleteTaskResponse)(nil), // 5: worker.CompleteTaskResponse
+	(*ChangeStatusRequest)(nil),  // 4: worker.ChangeStatusRequest
+	(*ChangeStatusResponse)(nil), // 5: worker.ChangeStatusResponse
 }
 var file_Worker_proto_depIdxs = []int32{
 	0, // 0: worker.WorkerService.RegisterWorker:input_type -> worker.RegisterRequest
 	2, // 1: worker.WorkerService.GetTask:input_type -> worker.GetTaskRequest
-	4, // 2: worker.WorkerService.CompleteTask:input_type -> worker.CompleteTaskRequest
+	4, // 2: worker.WorkerService.ChangeStatus:input_type -> worker.ChangeStatusRequest
 	1, // 3: worker.WorkerService.RegisterWorker:output_type -> worker.RegisterResponse
 	3, // 4: worker.WorkerService.GetTask:output_type -> worker.GetTaskResponse
-	5, // 5: worker.WorkerService.CompleteTask:output_type -> worker.CompleteTaskResponse
+	5, // 5: worker.WorkerService.ChangeStatus:output_type -> worker.ChangeStatusResponse
 	3, // [3:6] is the sub-list for method output_type
 	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

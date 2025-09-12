@@ -8,7 +8,6 @@ package pb
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -22,7 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	WorkerService_RegisterWorker_FullMethodName = "/worker.WorkerService/RegisterWorker"
 	WorkerService_GetTask_FullMethodName        = "/worker.WorkerService/GetTask"
-	WorkerService_CompleteTask_FullMethodName   = "/worker.WorkerService/CompleteTask"
+	WorkerService_ChangeStatus_FullMethodName   = "/worker.WorkerService/ChangeStatus"
 )
 
 // WorkerServiceClient is the client API for WorkerService service.
@@ -33,7 +32,7 @@ const (
 type WorkerServiceClient interface {
 	RegisterWorker(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	GetTask(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*GetTaskResponse, error)
-	CompleteTask(ctx context.Context, in *CompleteTaskRequest, opts ...grpc.CallOption) (*CompleteTaskResponse, error)
+	ChangeStatus(ctx context.Context, in *ChangeStatusRequest, opts ...grpc.CallOption) (*ChangeStatusResponse, error)
 }
 
 type workerServiceClient struct {
@@ -64,10 +63,10 @@ func (c *workerServiceClient) GetTask(ctx context.Context, in *GetTaskRequest, o
 	return out, nil
 }
 
-func (c *workerServiceClient) CompleteTask(ctx context.Context, in *CompleteTaskRequest, opts ...grpc.CallOption) (*CompleteTaskResponse, error) {
+func (c *workerServiceClient) ChangeStatus(ctx context.Context, in *ChangeStatusRequest, opts ...grpc.CallOption) (*ChangeStatusResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CompleteTaskResponse)
-	err := c.cc.Invoke(ctx, WorkerService_CompleteTask_FullMethodName, in, out, cOpts...)
+	out := new(ChangeStatusResponse)
+	err := c.cc.Invoke(ctx, WorkerService_ChangeStatus_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +81,7 @@ func (c *workerServiceClient) CompleteTask(ctx context.Context, in *CompleteTask
 type WorkerServiceServer interface {
 	RegisterWorker(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	GetTask(context.Context, *GetTaskRequest) (*GetTaskResponse, error)
-	CompleteTask(context.Context, *CompleteTaskRequest) (*CompleteTaskResponse, error)
+	ChangeStatus(context.Context, *ChangeStatusRequest) (*ChangeStatusResponse, error)
 	mustEmbedUnimplementedWorkerServiceServer()
 }
 
@@ -99,8 +98,8 @@ func (UnimplementedWorkerServiceServer) RegisterWorker(context.Context, *Registe
 func (UnimplementedWorkerServiceServer) GetTask(context.Context, *GetTaskRequest) (*GetTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTask not implemented")
 }
-func (UnimplementedWorkerServiceServer) CompleteTask(context.Context, *CompleteTaskRequest) (*CompleteTaskResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CompleteTask not implemented")
+func (UnimplementedWorkerServiceServer) ChangeStatus(context.Context, *ChangeStatusRequest) (*ChangeStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeStatus not implemented")
 }
 func (UnimplementedWorkerServiceServer) mustEmbedUnimplementedWorkerServiceServer() {}
 func (UnimplementedWorkerServiceServer) testEmbeddedByValue()                       {}
@@ -159,20 +158,20 @@ func _WorkerService_GetTask_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WorkerService_CompleteTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CompleteTaskRequest)
+func _WorkerService_ChangeStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WorkerServiceServer).CompleteTask(ctx, in)
+		return srv.(WorkerServiceServer).ChangeStatus(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WorkerService_CompleteTask_FullMethodName,
+		FullMethod: WorkerService_ChangeStatus_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkerServiceServer).CompleteTask(ctx, req.(*CompleteTaskRequest))
+		return srv.(WorkerServiceServer).ChangeStatus(ctx, req.(*ChangeStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -193,8 +192,8 @@ var WorkerService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _WorkerService_GetTask_Handler,
 		},
 		{
-			MethodName: "CompleteTask",
-			Handler:    _WorkerService_CompleteTask_Handler,
+			MethodName: "ChangeStatus",
+			Handler:    _WorkerService_ChangeStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
