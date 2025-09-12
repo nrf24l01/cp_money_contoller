@@ -7,12 +7,11 @@
 package pb
 
 import (
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
-
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -126,7 +125,7 @@ func (x *RegisterResponse) GetId() uint64 {
 	return 0
 }
 
-type GetBuildingRequest struct {
+type GetTaskRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	WorkerUuid    string                 `protobuf:"bytes,1,opt,name=worker_uuid,json=workerUuid,proto3" json:"worker_uuid,omitempty"`
 	WorkerKey     string                 `protobuf:"bytes,2,opt,name=worker_key,json=workerKey,proto3" json:"worker_key,omitempty"`
@@ -134,20 +133,20 @@ type GetBuildingRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetBuildingRequest) Reset() {
-	*x = GetBuildingRequest{}
+func (x *GetTaskRequest) Reset() {
+	*x = GetTaskRequest{}
 	mi := &file_Worker_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetBuildingRequest) String() string {
+func (x *GetTaskRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetBuildingRequest) ProtoMessage() {}
+func (*GetTaskRequest) ProtoMessage() {}
 
-func (x *GetBuildingRequest) ProtoReflect() protoreflect.Message {
+func (x *GetTaskRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_Worker_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -159,26 +158,26 @@ func (x *GetBuildingRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetBuildingRequest.ProtoReflect.Descriptor instead.
-func (*GetBuildingRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetTaskRequest.ProtoReflect.Descriptor instead.
+func (*GetTaskRequest) Descriptor() ([]byte, []int) {
 	return file_Worker_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetBuildingRequest) GetWorkerUuid() string {
+func (x *GetTaskRequest) GetWorkerUuid() string {
 	if x != nil {
 		return x.WorkerUuid
 	}
 	return ""
 }
 
-func (x *GetBuildingRequest) GetWorkerKey() string {
+func (x *GetTaskRequest) GetWorkerKey() string {
 	if x != nil {
 		return x.WorkerKey
 	}
 	return ""
 }
 
-type GetBuildingResponse struct {
+type GetTaskResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	Task          string                 `protobuf:"bytes,2,opt,name=task,proto3" json:"task,omitempty"`
@@ -188,20 +187,20 @@ type GetBuildingResponse struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetBuildingResponse) Reset() {
-	*x = GetBuildingResponse{}
+func (x *GetTaskResponse) Reset() {
+	*x = GetTaskResponse{}
 	mi := &file_Worker_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetBuildingResponse) String() string {
+func (x *GetTaskResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetBuildingResponse) ProtoMessage() {}
+func (*GetTaskResponse) ProtoMessage() {}
 
-func (x *GetBuildingResponse) ProtoReflect() protoreflect.Message {
+func (x *GetTaskResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_Worker_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -213,33 +212,33 @@ func (x *GetBuildingResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetBuildingResponse.ProtoReflect.Descriptor instead.
-func (*GetBuildingResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetTaskResponse.ProtoReflect.Descriptor instead.
+func (*GetTaskResponse) Descriptor() ([]byte, []int) {
 	return file_Worker_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetBuildingResponse) GetUuid() string {
+func (x *GetTaskResponse) GetUuid() string {
 	if x != nil {
 		return x.Uuid
 	}
 	return ""
 }
 
-func (x *GetBuildingResponse) GetTask() string {
+func (x *GetTaskResponse) GetTask() string {
 	if x != nil {
 		return x.Task
 	}
 	return ""
 }
 
-func (x *GetBuildingResponse) GetPayload() string {
+func (x *GetTaskResponse) GetPayload() string {
 	if x != nil {
 		return x.Payload
 	}
 	return ""
 }
 
-func (x *GetBuildingResponse) GetUnixTime() uint64 {
+func (x *GetTaskResponse) GetUnixTime() uint64 {
 	if x != nil {
 		return x.UnixTime
 	}
@@ -360,13 +359,13 @@ const file_Worker_proto_rawDesc = "" +
 	"\x10RegisterResponse\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x10\n" +
 	"\x03key\x18\x02 \x01(\tR\x03key\x12\x0e\n" +
-	"\x02id\x18\x03 \x01(\x04R\x02id\"T\n" +
-	"\x12GetBuildingRequest\x12\x1f\n" +
+	"\x02id\x18\x03 \x01(\x04R\x02id\"P\n" +
+	"\x0eGetTaskRequest\x12\x1f\n" +
 	"\vworker_uuid\x18\x01 \x01(\tR\n" +
 	"workerUuid\x12\x1d\n" +
 	"\n" +
-	"worker_key\x18\x02 \x01(\tR\tworkerKey\"t\n" +
-	"\x13GetBuildingResponse\x12\x12\n" +
+	"worker_key\x18\x02 \x01(\tR\tworkerKey\"p\n" +
+	"\x0fGetTaskResponse\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x12\n" +
 	"\x04task\x18\x02 \x01(\tR\x04task\x12\x18\n" +
 	"\apayload\x18\x03 \x01(\tR\apayload\x12\x1b\n" +
@@ -376,10 +375,10 @@ const file_Worker_proto_rawDesc = "" +
 	"\apayload\x18\x02 \x01(\tR\apayload\x12\x1b\n" +
 	"\tunix_time\x18\x03 \x01(\x04R\bunixTime\"&\n" +
 	"\x14CompleteTaskResponse\x12\x0e\n" +
-	"\x02ok\x18\x01 \x01(\bR\x02ok2\xe7\x01\n" +
+	"\x02ok\x18\x01 \x01(\bR\x02ok2\xdb\x01\n" +
 	"\rWorkerService\x12C\n" +
-	"\x0eRegisterWorker\x12\x17.worker.RegisterRequest\x1a\x18.worker.RegisterResponse\x12F\n" +
-	"\vGetBuilding\x12\x1a.worker.GetBuildingRequest\x1a\x1b.worker.GetBuildingResponse\x12I\n" +
+	"\x0eRegisterWorker\x12\x17.worker.RegisterRequest\x1a\x18.worker.RegisterResponse\x12:\n" +
+	"\aGetTask\x12\x16.worker.GetTaskRequest\x1a\x17.worker.GetTaskResponse\x12I\n" +
 	"\fCompleteTask\x12\x1b.worker.CompleteTaskRequest\x1a\x1c.worker.CompleteTaskResponseB+Z)github.com/nrf24l01/cp_money_contoller/pbb\x06proto3"
 
 var (
@@ -398,17 +397,17 @@ var file_Worker_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_Worker_proto_goTypes = []any{
 	(*RegisterRequest)(nil),      // 0: worker.RegisterRequest
 	(*RegisterResponse)(nil),     // 1: worker.RegisterResponse
-	(*GetBuildingRequest)(nil),   // 2: worker.GetBuildingRequest
-	(*GetBuildingResponse)(nil),  // 3: worker.GetBuildingResponse
+	(*GetTaskRequest)(nil),       // 2: worker.GetTaskRequest
+	(*GetTaskResponse)(nil),      // 3: worker.GetTaskResponse
 	(*CompleteTaskRequest)(nil),  // 4: worker.CompleteTaskRequest
 	(*CompleteTaskResponse)(nil), // 5: worker.CompleteTaskResponse
 }
 var file_Worker_proto_depIdxs = []int32{
 	0, // 0: worker.WorkerService.RegisterWorker:input_type -> worker.RegisterRequest
-	2, // 1: worker.WorkerService.GetBuilding:input_type -> worker.GetBuildingRequest
+	2, // 1: worker.WorkerService.GetTask:input_type -> worker.GetTaskRequest
 	4, // 2: worker.WorkerService.CompleteTask:input_type -> worker.CompleteTaskRequest
 	1, // 3: worker.WorkerService.RegisterWorker:output_type -> worker.RegisterResponse
-	3, // 4: worker.WorkerService.GetBuilding:output_type -> worker.GetBuildingResponse
+	3, // 4: worker.WorkerService.GetTask:output_type -> worker.GetTaskResponse
 	5, // 5: worker.WorkerService.CompleteTask:output_type -> worker.CompleteTaskResponse
 	3, // [3:6] is the sub-list for method output_type
 	0, // [0:3] is the sub-list for method input_type

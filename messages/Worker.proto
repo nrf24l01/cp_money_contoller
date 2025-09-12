@@ -16,12 +16,12 @@ message RegisterResponse {
     uint64 id = 3;
 }
 
-message GetBuildingRequest {
+message GetTaskRequest {
     string worker_uuid = 1;
     string worker_key = 2;
 }
 
-message GetBuildingResponse {
+message GetTaskResponse {
     string uuid = 1;
     string task = 2;
     string payload = 3;
@@ -41,6 +41,6 @@ message CompleteTaskResponse {
 // Сервис
 service WorkerService {
     rpc RegisterWorker(RegisterRequest) returns (RegisterResponse);
-    rpc GetBuilding(GetBuildingRequest) returns (GetBuildingResponse);
+    rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
     rpc CompleteTask(CompleteTaskRequest) returns (CompleteTaskResponse);
 }

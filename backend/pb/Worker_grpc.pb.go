@@ -8,6 +8,7 @@ package pb
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -20,7 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	WorkerService_RegisterWorker_FullMethodName = "/worker.WorkerService/RegisterWorker"
-	WorkerService_GetBuilding_FullMethodName    = "/worker.WorkerService/GetBuilding"
+	WorkerService_GetTask_FullMethodName        = "/worker.WorkerService/GetTask"
 	WorkerService_CompleteTask_FullMethodName   = "/worker.WorkerService/CompleteTask"
 )
 
@@ -31,7 +32,7 @@ const (
 // Сервис
 type WorkerServiceClient interface {
 	RegisterWorker(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
-	GetBuilding(ctx context.Context, in *GetBuildingRequest, opts ...grpc.CallOption) (*GetBuildingResponse, error)
+	GetTask(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*GetTaskResponse, error)
 	CompleteTask(ctx context.Context, in *CompleteTaskRequest, opts ...grpc.CallOption) (*CompleteTaskResponse, error)
 }
 
@@ -53,10 +54,10 @@ func (c *workerServiceClient) RegisterWorker(ctx context.Context, in *RegisterRe
 	return out, nil
 }
 
-func (c *workerServiceClient) GetBuilding(ctx context.Context, in *GetBuildingRequest, opts ...grpc.CallOption) (*GetBuildingResponse, error) {
+func (c *workerServiceClient) GetTask(ctx context.Context, in *GetTaskRequest, opts ...grpc.CallOption) (*GetTaskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetBuildingResponse)
-	err := c.cc.Invoke(ctx, WorkerService_GetBuilding_FullMethodName, in, out, cOpts...)
+	out := new(GetTaskResponse)
+	err := c.cc.Invoke(ctx, WorkerService_GetTask_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +81,7 @@ func (c *workerServiceClient) CompleteTask(ctx context.Context, in *CompleteTask
 // Сервис
 type WorkerServiceServer interface {
 	RegisterWorker(context.Context, *RegisterRequest) (*RegisterResponse, error)
-	GetBuilding(context.Context, *GetBuildingRequest) (*GetBuildingResponse, error)
+	GetTask(context.Context, *GetTaskRequest) (*GetTaskResponse, error)
 	CompleteTask(context.Context, *CompleteTaskRequest) (*CompleteTaskResponse, error)
 	mustEmbedUnimplementedWorkerServiceServer()
 }
@@ -95,8 +96,8 @@ type UnimplementedWorkerServiceServer struct{}
 func (UnimplementedWorkerServiceServer) RegisterWorker(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterWorker not implemented")
 }
-func (UnimplementedWorkerServiceServer) GetBuilding(context.Context, *GetBuildingRequest) (*GetBuildingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetBuilding not implemented")
+func (UnimplementedWorkerServiceServer) GetTask(context.Context, *GetTaskRequest) (*GetTaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTask not implemented")
 }
 func (UnimplementedWorkerServiceServer) CompleteTask(context.Context, *CompleteTaskRequest) (*CompleteTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompleteTask not implemented")
@@ -140,20 +141,20 @@ func _WorkerService_RegisterWorker_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WorkerService_GetBuilding_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetBuildingRequest)
+func _WorkerService_GetTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTaskRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WorkerServiceServer).GetBuilding(ctx, in)
+		return srv.(WorkerServiceServer).GetTask(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WorkerService_GetBuilding_FullMethodName,
+		FullMethod: WorkerService_GetTask_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkerServiceServer).GetBuilding(ctx, req.(*GetBuildingRequest))
+		return srv.(WorkerServiceServer).GetTask(ctx, req.(*GetTaskRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -188,8 +189,8 @@ var WorkerService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _WorkerService_RegisterWorker_Handler,
 		},
 		{
-			MethodName: "GetBuilding",
-			Handler:    _WorkerService_GetBuilding_Handler,
+			MethodName: "GetTask",
+			Handler:    _WorkerService_GetTask_Handler,
 		},
 		{
 			MethodName: "CompleteTask",

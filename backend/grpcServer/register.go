@@ -17,10 +17,10 @@ func (s *GrpcServe) RegisterWorker(ctx context.Context, req *pb.RegisterRequest)
     }, nil
 }
 
-func (s *GrpcServe) GetBuilding(ctx context.Context, req *pb.GetBuildingRequest) (*pb.GetBuildingResponse, error) {
-    // Пример: возвращаем фиктивное здание
-    return &pb.GetBuildingResponse{
-        Uuid:     "building-1234",
+func (s *GrpcServe) GetTask(ctx context.Context, req *pb.GetTaskRequest) (*pb.GetTaskResponse, error) {
+    // Пример: возвращаем фиктивную задачу
+    return &pb.GetTaskResponse{
+        Uuid:     "task-1234",
         Task:     "collect_coins",
         Payload:  "some_payload_data",
         UnixTime: 1234567890,
