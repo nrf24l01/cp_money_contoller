@@ -45,7 +45,7 @@ func (s *GrpcServe) GetTask(ctx context.Context, req *pb.GetTaskRequest) (*pb.Ge
         unixTime = uint64(task.CreatedAt.Unix())
     }
     return &pb.GetTaskResponse{
-        Uuid:     task.ID.String(),
+        Uuid:     taskStatus.ID.String(),
         Task:     task.Type,
         Payload:  task.Payload,
         UnixTime: unixTime,
