@@ -15,6 +15,7 @@ type TaskStatus struct {
 	goorm.BaseModel
 	TaskID         uuid.UUID  `gorm:"column:task_id;not null"`
 	Task           *Task      `gorm:"foreignKey:TaskID;references:ID"`
+	Logs           *[]string  `gorm:"type:jsonb;default:'[]'"`
 	Status         string     `gorm:"type:varchar(50);not null"`
 	Result         *string    `gorm:"type:jsonb"`
 }

@@ -31,8 +31,9 @@ message GetTaskResponse {
 message ChangeStatusRequest {
     string uuid = 1;
     string payload = 2;
-    string status = 3;
-    uint64 unix_time = 4;
+    string logs = 3;
+    string status = 4;
+    uint64 unix_time = 5;
 }
 
 message ChangeStatusResponse {

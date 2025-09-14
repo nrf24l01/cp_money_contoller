@@ -9,12 +9,7 @@ import (
 )
 
 func (s *GrpcServe) ChangeStatus(ctx context.Context, req *pb.ChangeStatusRequest) (*pb.ChangeStatusResponse, error) {
-	var taskStatus models.TaskStatus
-	if err := s.DB.Where("id = ?", req.Uuid).First(&taskStatus).Error; err != nil {
-		return nil, err
-	}
-
-	taskStatus.Status = req.Status
+	// parse payload JSON
 	var jsonData interface{}
 	if err := json.Unmarshal([]byte(req.Payload), &jsonData); err != nil {
 		return nil, err
@@ -24,8 +19,19 @@ func (s *GrpcServe) ChangeStatus(ctx context.Context, req *pb.ChangeStatusReques
 		return nil, err
 	}
 	jsonString := string(jsonBytes)
-	taskStatus.Result = &jsonString
-	if err := s.DB.Save(&taskStatus).Error; err != nil {
+
+	// parse logs JSON array
+	var logs []string
+	if err := json.Unmarshal([]byte(req.Logs), &logs); err != nil {
+		return nil, err
+	}
+	// use raw JSON string for logs field to match JSON column
+	logsString := req.Logs
+
+	// update fields without loading full record to avoid Scan error
+	if err := s.DB.Model(&models.TaskStatus{}).
+		Where("id = ?", req.Uuid).
+		Updates(map[string]interface{}{"status": req.Status, "result": jsonString, "logs": logsString}).Error; err != nil {
 		return nil, err
 	}
 

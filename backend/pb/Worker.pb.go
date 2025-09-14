@@ -249,8 +249,9 @@ type ChangeStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	Payload       string                 `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
-	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
-	UnixTime      uint64                 `protobuf:"varint,4,opt,name=unix_time,json=unixTime,proto3" json:"unix_time,omitempty"`
+	Logs          string                 `protobuf:"bytes,3,opt,name=logs,proto3" json:"logs,omitempty"`
+	Status        string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
+	UnixTime      uint64                 `protobuf:"varint,5,opt,name=unix_time,json=unixTime,proto3" json:"unix_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -295,6 +296,13 @@ func (x *ChangeStatusRequest) GetUuid() string {
 func (x *ChangeStatusRequest) GetPayload() string {
 	if x != nil {
 		return x.Payload
+	}
+	return ""
+}
+
+func (x *ChangeStatusRequest) GetLogs() string {
+	if x != nil {
+		return x.Logs
 	}
 	return ""
 }
@@ -377,12 +385,13 @@ const file_Worker_proto_rawDesc = "" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x12\n" +
 	"\x04task\x18\x02 \x01(\tR\x04task\x12\x18\n" +
 	"\apayload\x18\x03 \x01(\tR\apayload\x12\x1b\n" +
-	"\tunix_time\x18\x04 \x01(\x04R\bunixTime\"x\n" +
+	"\tunix_time\x18\x04 \x01(\x04R\bunixTime\"\x8c\x01\n" +
 	"\x13ChangeStatusRequest\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x18\n" +
-	"\apayload\x18\x02 \x01(\tR\apayload\x12\x16\n" +
-	"\x06status\x18\x03 \x01(\tR\x06status\x12\x1b\n" +
-	"\tunix_time\x18\x04 \x01(\x04R\bunixTime\"&\n" +
+	"\apayload\x18\x02 \x01(\tR\apayload\x12\x12\n" +
+	"\x04logs\x18\x03 \x01(\tR\x04logs\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\tR\x06status\x12\x1b\n" +
+	"\tunix_time\x18\x05 \x01(\x04R\bunixTime\"&\n" +
 	"\x14ChangeStatusResponse\x12\x0e\n" +
 	"\x02ok\x18\x01 \x01(\bR\x02ok2\xdb\x01\n" +
 	"\rWorkerService\x12C\n" +
