@@ -1,5 +1,8 @@
 booster
 driver
 *.pyc
+__pycache__
 *venv
 tmp
+*.html
+*.png
