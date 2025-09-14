@@ -1,11 +1,13 @@
+import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from time import sleep
-from modules import ThreadSafeLogger
+from time import sleep, time
+from modules import ThreadSafeLogger, ImapClient
+from threading import Thread
 
-def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, invite: str, email: str, password: str, name: str, birthday: str, learn_place: str, grade: int):
+def create_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, invite: str, email: str, password: str, name: str, birthday: str, learn_place: str, grade: int):
     driver.get("https://codingprojects.ru/register")
 
     # Заполняем форму
@@ -51,10 +53,6 @@ def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, invite: st
                     break
                 except:
                     pass
-                html = driver.page_source
-                with open("recaptcha_challenge.html", "w", encoding="utf-8") as f:
-                    f.write(html)
-                logger.info("HTML saved to recaptcha_challenge.html")
                 help_button = WebDriverWait(driver, 1).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".button-holder.help-button-holder")))
                 help_button.click()
                 logger.info("Clicked autosolve button")
@@ -82,20 +80,96 @@ def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, invite: st
         driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div/div/div/div/div/div/div")
         driver.save_screenshot("complete.png")
         logger.info("Регистрация удалась")
+        return True
     except:
         logger.error("Регистрация не удалась")
         # Screenshot for debugging
         driver.save_screenshot("registration_error.png")
         logger.info("Скриншот сохранен как registration_error.png")
-    # Ждем результата
-    sleep(100)
+        return False
 
+def verify_email(driver: webdriver.Chrome, logger: ThreadSafeLogger, link: str, email: str, password: str, result: dict):
+    logger.info(f"Переход по ссылке верификации: {link}")
+    driver.get(link)
+    
+    try:
+        driver.find_element(By.ID, "inputEmail").send_keys(email)
+        driver.find_element(By.ID, "inputPassword").send_keys(password)
+        driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+    except:
+        pass
+    
+    try:
+        driver.find_element(By.XPATH, "//img[@src='/images/clip-education.png']")
+        result['verified'] = True
+        logger.info("Email успешно верифицирован")
+        return True
+    except:
+        result['verified'] = False
+        logger.error("Не удалось верифицировать email")
+        return False
+
+def wait_for_mail(logger: ThreadSafeLogger, imap_client: ImapClient, verify_link: dict, timeout: int = 300,  email: str = "noreply@codingprojects.ru"):
+    logger.info(f"Waiting for email for {email}")
+    start_time = time()
+    while time() - start_time < timeout:
+        email_message = imap_client.find_from(email)
+        if email_message:
+            pattern = r'https://codingprojects\.ru/email/verify/\d+/[a-f0-9]+(?:\?[^ \]\r\n]*)?'
+            matches = re.findall(pattern, email_message)
+            logger.info(f"Verification link found: {matches[0]}")
+            logger.info("Email received")
+            verify_link['url'] = matches[0]
+            return matches[0]
+        sleep(5)
+    logger.warn("Email not received within timeout")
+    return None
+
+def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, imap_client: ImapClient, invite: str, email: str, password: str, name: str, birthday: str, learn_place: str, grade: int):
+    logger.info("Start registration process")
+
+    verify_link = {}
+    email_thread = Thread(target=wait_for_mail, args=(logger, imap_client, verify_link), name="EmailThread")
+    selenium_thread = Thread(target=create_user, args=(driver, logger, invite, email, password, name, birthday, learn_place, grade), name="CreateUserThread")
+    
+    selenium_thread.start()
+    email_thread.start()
+    
+    selenium_thread.join()
+    email_thread.join()
+
+    link = verify_link.get('url', None)
+    if link is None:
+        logger.error("Failed to get verification link from email")
+        return False
+    result = {}
+    
+    verify_thread = Thread(target=verify_email, args=(driver, logger, link, email, password, result), name="VerifyEmailThread")
+    verify_thread.start()
+    verify_thread.join()
+    
+    if result.get('verified', False):
+        logger.info("User created and verified successfully")
+        return True
+    else:
+        logger.error("User created but verification failed")
+        return False
+    
 
 if __name__ == "__main__":
     from .preconfigure import build_config
-    # Настраиваем Chrome с расширением
-    options, service = build_config(headless=True)
+    import os
+    
     logger = ThreadSafeLogger(__name__)
+    
+    options, service = build_config(headless=True)
     driver = webdriver.Chrome(service=service, options=options)
-    register_user(driver, logger, "RSaEMYwq", "fake_email+fak@example.com", "fake_password", "Fake Name", "1990-01-01", "Fake School", 10)
+
+    IMAP_HOST = os.getenv("IMAP_HOST")
+    IMAP_USER = os.getenv("IMAP_USER")
+    IMAP_PASSWORD = os.getenv("IMAP_PASSWORD")
+
+    imap_client = ImapClient(IMAP_HOST, IMAP_USER, IMAP_PASSWORD)
+
+    register_user(driver, logger, imap_client, "RSaEMYwq", "kovalsky+107@mail.snnlab.ru", "fake_password", "Fake Name", "1990-01-01", "Fake School", 10)
 

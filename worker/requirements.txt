@@ -1,3 +1,6 @@
 selenium==4.35.0
 tqdm~=4.67.1
 requests~=2.32.5
+grpcio==1.74.0
+grpcio-tools==1.74.0
+imapclient==2.3.1
