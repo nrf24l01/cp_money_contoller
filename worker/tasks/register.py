@@ -171,5 +171,5 @@ if __name__ == "__main__":
 
     imap_client = ImapClient(IMAP_HOST, IMAP_USER, IMAP_PASSWORD)
 
-    register_user(driver, logger, imap_client, "RSaEMYwq", "kovalsky+107@mail.snnlab.ru", "fake_password", "Fake Name", "1990-01-01", "Fake School", 10)
+    register_user(driver, logger, imap_client, "", "", "", "", "", "", 10)
 
