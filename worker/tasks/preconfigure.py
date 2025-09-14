@@ -12,7 +12,6 @@ def download_chrome_and_driver(driver_path, version="140.0.7339.82"):
     os.makedirs(driver_path, exist_ok=True)
     chrome_url = f"https://storage.googleapis.com/chrome-for-testing-public/{version}/linux64/chrome-linux64.zip"
     driver_url = f"https://storage.googleapis.com/chrome-for-testing-public/{version}/linux64/chromedriver-linux64.zip"
-    print(chrome_url, driver_url)
     
     chrome_dir = os.path.join(driver_path, "chrome-linux64")
     driver_dir = os.path.join(driver_path, "chromedriver-linux64")
