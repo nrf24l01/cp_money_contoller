@@ -125,7 +125,7 @@ def wait_for_mail(logger: ThreadSafeLogger, imap_client: ImapClient, verify_link
     logger.warn("Email not received within timeout")
     return None
 
-def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, imap_client: ImapClient, invite: str, email: str, password: str, name: str, birthday: str, learn_place: str, grade: int):
+def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, imap_client: ImapClient, invite: str, email: str, password: str, name: str, birthday: str, learn_place: str, grade: int, res: dict = {}):
     logger.info("Start registration process")
 
     verify_link = {}
@@ -141,6 +141,7 @@ def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, imap_clien
     link = verify_link.get('url', None)
     if link is None:
         logger.error("Failed to get verification link from email")
+        res["result"] = False
         return False
     result = {}
     
@@ -150,9 +151,11 @@ def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, imap_clien
     
     if result.get('verified', False):
         logger.info("User created and verified successfully")
+        res["result"] = True
         return True
     else:
         logger.error("User created but verification failed")
+        res["result"] = False
         return False
     
 
@@ -171,5 +174,5 @@ if __name__ == "__main__":
 
     imap_client = ImapClient(IMAP_HOST, IMAP_USER, IMAP_PASSWORD)
 
-    register_user(driver, logger, imap_client, "", "", "", "", "", "", 10)
+    register_user(driver, logger, imap_client, "",  "", "", "", "2000-01-01", "СШ №1", 10)
 

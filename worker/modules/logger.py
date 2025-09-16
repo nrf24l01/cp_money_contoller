@@ -58,3 +58,6 @@ class ThreadSafeLogger:
 
     def get_full_log(self) -> str:
         return self.memory_handler.get_logs()
+    
+    def clear_log(self) -> None:
+        self.memory_handler._records.clear()

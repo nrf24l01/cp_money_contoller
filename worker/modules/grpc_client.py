@@ -56,9 +56,9 @@ class WorkerClient:
             return None
         return resp
     
-    def change_status(self, payload: str, logs: str, status: str, unix_time: int):
+    def change_status(self, task_uuid: str, payload: str, logs: str, status: str, unix_time: int):
         request = Worker_pb2.ChangeStatusRequest(
-            uuid=self.uuid,
+            uuid=task_uuid,
             payload=payload,
             logs=logs,
             status=status,
