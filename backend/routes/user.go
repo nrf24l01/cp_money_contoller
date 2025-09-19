@@ -14,4 +14,5 @@ func RegisterAuthRoutes(e *echo.Echo, h *handlers.Handler) {
 	group.POST("/login", h.UserLoginHandler, echokit.ValidationMiddleware(func() interface{} {
 		return &schemas.UserLoginRequest{}
 	}))
+	group.POST("/refresh", h.RefreshAccessTokenHandler)
 }

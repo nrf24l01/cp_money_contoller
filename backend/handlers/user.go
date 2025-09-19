@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -41,5 +42,36 @@ func (h *Handler) UserLoginHandler(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, schemas.AccessTokenResponse{
 		AccessToken: accessToken,
+	})
+}
+
+func (h *Handler) RefreshAccessTokenHandler(c echo.Context) error {
+	refreshToken, err := c.Cookie("refresh_token")
+	if err != nil {
+		log.Printf("No refresh token found: %v", err)
+		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Refresh token not found"})
+	}
+
+	claims, err := jwtutil.ValidateToken(refreshToken.Value, []byte(h.Config.JWTRefreshSecret))
+	if err != nil {
+		log.Printf("Invalid refresh token: %v", err)
+		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Invalid refresh token"})
+	}
+
+	userID := claims["sub"].(string)
+	username := claims["username"].(string)
+
+	var user models.User
+	if err := h.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+		return c.JSON(http.StatusUnauthorized, schemas.DefaultUnauthorizedErrorResponse)
+	}
+
+	access_token, err := jwtutil.GenerateAccessToken(userID, username, []byte(h.Config.JWTAccessSecret))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, schemas.DefaultInternalErrorResponse)
+	}
+
+	return c.JSON(http.StatusOK, schemas.AccessTokenResponse{
+		AccessToken: access_token,
 	})
 }
