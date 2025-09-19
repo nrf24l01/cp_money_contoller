@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -28,11 +29,22 @@ func main() {
 
 	argsWithoutProg := os.Args[1:]
 
-	if len(argsWithoutProg) == 3 && argsWithoutProg[0] == "create-user" {
+	if (len(argsWithoutProg) == 3 || len(argsWithoutProg) == 2) && argsWithoutProg[0] == "create-user" {
+		log.Printf("Creating user %s", argsWithoutProg[1])
+		if len(argsWithoutProg) == 2 {
+			log.Printf("Password not provided as argument, reading from stdin")
+			var password string
+			_, err := fmt.Scanln(&password)
+			if err != nil {
+				log.Fatalf("Failed to read password from stdin: %v", err)
+			}
+			argsWithoutProg = append(argsWithoutProg, password)
+		}
 		user, password := argsWithoutProg[1], argsWithoutProg[2]
 		if err := h.CreateUser(user, password); err != nil {
-			panic(err)
+			log.Printf("Error creating user: %v", err)
+		} else {
+			log.Printf("User %s created successfully", user)
 		}
-		log.Printf("User %s created successfully", user)
 	}
 }

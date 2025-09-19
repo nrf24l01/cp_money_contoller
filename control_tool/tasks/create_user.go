@@ -11,6 +11,11 @@ func (h *Handler) CreateUser(username, password string) error {
 		return errors.New("username and password cannot be empty")
 	}
 
+	var existingUser models.User
+	if err := h.DB.Where("username = ?", username).First(&existingUser).Error; err == nil {
+		return errors.New("user already exists")
+	}
+
 	user := &models.User{
 		Username: username,
 	}
