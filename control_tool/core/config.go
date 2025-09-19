@@ -14,7 +14,7 @@ type Config struct {
 	PGTimeZone    string
 }
 
-func BuildConfigFromEnv() (*Config, error) {
+func BuildConfigFromEnv() (*Config) {
 	cfg := &Config{
 		PGHost:           os.Getenv("PG_HOST"),
 		PGPort:           os.Getenv("PG_PORT"),
@@ -24,5 +24,5 @@ func BuildConfigFromEnv() (*Config, error) {
 		PGSSLMode:        os.Getenv("PG_SSL_MODE"),
 		PGTimeZone:       os.Getenv("PG_TIME_ZONE"),
 	}
-	return cfg, nil
+	return cfg
 }

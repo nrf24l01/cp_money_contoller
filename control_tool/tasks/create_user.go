@@ -10,10 +10,9 @@ func (h *Handler) CreateUser(username, password string) error {
 	if username == "" || password == "" {
 		return errors.New("username and password cannot be empty")
 	}
-	
+
 	user := &models.User{
 		Username: username,
-		Password: "",
 	}
 	user.SetPassword(password)
 
