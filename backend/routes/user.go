@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"github.com/nrf24l01/cp_money_contoller/handlers"
-	"github.com/nrf24l01/cp_money_contoller/schemas"
+	"github.com/nrf24l01/cp_money_controller/handlers"
+	"github.com/nrf24l01/cp_money_controller/schemas"
 	"github.com/nrf24l01/go-web-utils/echokit"
 
 	"github.com/labstack/echo/v4"

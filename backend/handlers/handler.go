@@ -3,7 +3,7 @@ package handlers
 import (
 	"gorm.io/gorm"
 
-	"github.com/nrf24l01/cp_money_contoller/core"
+	"github.com/nrf24l01/cp_money_controller/core"
 )
 
 type Handler struct {

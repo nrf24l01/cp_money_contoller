@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/nrf24l01/cp_money_contoller/models"
-	"github.com/nrf24l01/cp_money_contoller/schemas"
+	"github.com/nrf24l01/cp_money_controller/models"
+	"github.com/nrf24l01/cp_money_controller/schemas"
 	"github.com/nrf24l01/go-web-utils/jwtutil"
 )
 

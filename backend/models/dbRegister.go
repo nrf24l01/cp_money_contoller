@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/nrf24l01/cp_money_contoller/core"
+	"github.com/nrf24l01/cp_money_controller/core"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
