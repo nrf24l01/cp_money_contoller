@@ -3,16 +3,45 @@ package "Worker" {
     [Selenium] <- [Python обёртка]
 }
 
-package "Core" {
+package "HTTP API" {
     [Серв] <-> http
-    [Python обёртка] ..> http : REST API
+    [Python обёртка] ..> http : Задание выполнено
+}
+
+package "PostgreSQL" {
+    [Серв] ..> [PSQL] : SQL запросы
+    note right of [PSQL]
+        Хранение заданий и статусов
+    end note
 }
 
 package "RabbitMQ" {
-    [Python обёртка] <.. RabbitMQ : Задание взято 
-    [Серв] ..> RabbitMQ : Задание
+    [Python обёртка] <.. RabbitMQ : Задание взято
     note right of [RabbitMQ]
         Очередь заданий и результатов
+    end note
+}
+
+package "Redis" {
+    note right of [Redis]
+        Кэширование ячеек очереди заданий, чтоб понимать что не запушили ещё туда
+    end note
+}
+
+package "Task publisher" {
+    [Task-publisher] ..> PSQL : SQL запросы, какие задачи не сделаны
+    [Task-publisher] <.. Redis : Проверка, что задачи не запушены
+    [Task-publisher] ..> RabbitMQ : Пушит задачи в очередь
+    [Task-publisher] ..> Redis : Говорит что запушили
+    note right of [Task-publisher]
+        Публикует задачи в очередь
+    end note
+}
+
+package "Configure system" {
+    [Configurator] ..> PSQL : SQL запросы
+    note left of [Configurator]
+        Управление конфигурацией системы, создание пользователей
     end note
 }
 
