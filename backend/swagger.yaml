@@ -28,58 +28,6 @@ components:
         - error
         - message
 
-    WorkerRegistrationRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 6
-          maxLength: 6
-          description: Имя воркера (ровно 6 символов)
-      required:
-        - name
-
-    WorkerRegistrationResponse:
-      type: object
-      properties:
-        uuid:
-          type: string
-          format: uuid
-          description: UUID зарегистрированного воркера
-      required:
-        - uuid
-
-    WorkerStatusUpdateRequest:
-      type: object
-      properties:
-        worker_uuid:
-          type: string
-          format: uuid
-          description: UUID воркера
-        logs:
-          type: array
-          items:
-            type: string
-          description: Массив строк логов
-        status:
-          type: string
-          description: Текстовый статус
-        payload:
-          type: object
-          description: Произвольный JSON payload
-      required:
-        - worker_uuid
-        - status
-
-    SuccessResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: ok
-      required:
-        - message
-
     LoginRequest:
       type: object
       properties:
@@ -163,77 +111,6 @@ components:
         - last_update
 
 paths:
-  # Группа endpoints: Воркер
-  /worker/register:
-    post:
-      tags:
-        - Воркер
-      summary: Регистрация воркера
-      description: Регистрирует нового воркера в системе
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WorkerRegistrationRequest'
-      responses:
-        '200':
-          description: Воркер успешно зарегистрирован
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WorkerRegistrationResponse'
-        '400':
-          description: Неверные данные запроса
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /worker/status:
-    post:
-      tags:
-        - Воркер
-      summary: Обновление статуса задачи воркером
-      description: Обновляет статус выполнения задачи воркером
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/WorkerStatusUpdateRequest'
-      responses:
-        '200':
-          description: Статус успешно обновлен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-        '400':
-          description: Неверные данные запроса
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Воркер не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
   # Группа endpoints: Конфигурационные (требуют JWT)
   /auth/login:
     post:
@@ -400,8 +277,6 @@ paths:
                 $ref: '#/components/schemas/Error'
 
 tags:
-  - name: Воркер
-    description: Операции связанные с воркерами
   - name: Аутентификация
     description: Операции аутентификации и авторизации
   - name: Задачи

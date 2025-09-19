@@ -1,15 +1,11 @@
 package core
 
 import (
-	"fmt"
 	"os"
-	"strconv"
 )
 
 type Config struct {
-	RedisAddr     string
-	RedisPassword string
-	RedisDB       int
+	APPHost 	  string
 
 	PGHost        string
 	PGPort        string
@@ -19,33 +15,35 @@ type Config struct {
 	PGSSLMode     string
 	PGTimeZone    string
 
-	WorkerLifetime uint64 // in seconds
+	PasswordSalt            string
+	JWTAccessSecret         string
+	JWTRefreshSecret        string
+
+	AllowOrigins            string
+
+	TestEnv                 bool
+	ProductionEnv           bool
 }
 
 func BuildConfigFromEnv() (*Config, error) {
-	workerLifetime, err := strconv.ParseUint(os.Getenv("WORKER_LIFETIME"), 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("invalid WORKER_LIFETIME: %v", err)
-	}
-
-	redisDB, err := strconv.Atoi(os.Getenv("REDIS_DB"))
-	if err != nil {
-		return nil, fmt.Errorf("invalid REDIS_DB: %v", err)
-	}
-
 	cfg := &Config{
-		RedisAddr:      os.Getenv("REDIS_ADDR"),
-		RedisPassword:  os.Getenv("REDIS_PASSWORD"),
-		RedisDB:        redisDB,
+		APPHost:          os.Getenv("APP_HOST"),
 
-		PGHost:         os.Getenv("PG_HOST"),
-		PGPort:         os.Getenv("PG_PORT"),
-		PGUser:         os.Getenv("PG_USER"),
-		PGPassword:     os.Getenv("PG_PASSWORD"),
-		PGDatabase:     os.Getenv("PG_DATABASE"),
-		PGSSLMode:      os.Getenv("PG_SSL_MODE"),
-		PGTimeZone:     os.Getenv("PG_TIME_ZONE"),
-		WorkerLifetime: workerLifetime,
+		PasswordSalt:     os.Getenv("PASSWORD_SALT"),
+		JWTAccessSecret:  os.Getenv("JWT_ACCESS_SECRET"),
+		JWTRefreshSecret: os.Getenv("JWT_REFRESH_SECRET"),
+
+		AllowOrigins:     os.Getenv("ALLOW_ORIGINS"),
+		PGHost:           os.Getenv("PG_HOST"),
+		PGPort:           os.Getenv("PG_PORT"),
+		PGUser:           os.Getenv("PG_USER"),
+		PGPassword:       os.Getenv("PG_PASSWORD"),
+		PGDatabase:       os.Getenv("PG_DATABASE"),
+		PGSSLMode:        os.Getenv("PG_SSL_MODE"),
+		PGTimeZone:       os.Getenv("PG_TIME_ZONE"),
+
+		TestEnv:          os.Getenv("TEST_ENV") == "true",
+		ProductionEnv:    os.Getenv("PRODUCTION_ENV") == "true",
 	}
 	return cfg, nil
 }
