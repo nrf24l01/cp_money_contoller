@@ -10,6 +10,7 @@ type Task struct {
 	goorm.BaseModel
 	Type      string         `gorm:"type:varchar(100);not null"`
 	Payload   datatypes.JSON `gorm:"type:jsonb;not null"`
+	SecretKey string         `gorm:"type:varchar(100)"`
 }
 
 type TaskStatus struct {

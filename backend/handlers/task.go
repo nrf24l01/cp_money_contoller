@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/nrf24l01/cp_money_controller/backend/core"
 	"github.com/nrf24l01/cp_money_controller/backend/models"
 	"github.com/nrf24l01/cp_money_controller/backend/schemas"
 	"gorm.io/datatypes"
@@ -33,6 +34,7 @@ func (h *Handler) CreateTaskHandler(c echo.Context) error {
 	task := &models.Task{
 		Type:    task_body.Type,
 		Payload: datatypes.JSON(payloadBytes),
+		SecretKey: core.GenerateRandomString(100),
 	}
 
 	if err := h.DB.Create(task).Error; err != nil {
