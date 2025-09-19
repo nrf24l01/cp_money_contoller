@@ -6,8 +6,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from time import sleep, time
 from modules import ThreadSafeLogger, ImapClient
 from threading import Thread
+import traceback
 
-def create_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, invite: str, email: str, password: str, name: str, birthday: str, learn_place: str, grade: int):
+
+def create_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, invite: str, email: str, password: str, name: str, birthday: str, learn_place: str, grade: int, resp: dict):
     driver.get("https://codingprojects.ru/register")
 
     # Заполняем форму
@@ -22,46 +24,48 @@ def create_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, invite: str,
     driver.find_element("name", "school").send_keys(learn_place)
     driver.find_element("name", "grade").send_keys(str(grade))
     
-    for j in range(3):
-        response = driver.execute_script("return document.getElementById('g-recaptcha-response').value")
-        
-        if response:
-            break
-        logger.info(f"Попытка решения капчи {j+1}/3")
-        wait = WebDriverWait(driver, 10)
-        iframe = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "iframe[title='reCAPTCHA']")))
-        driver.switch_to.frame(iframe)
-        recaptcha_checkbox = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "recaptcha-checkbox-border")))
-        recaptcha_checkbox.click()
-        driver.switch_to.default_content()
-        logger.info("Ожидание решения капчи...")
-        for i in range(30):
+    try:
+        for j in range(3):
             response = driver.execute_script("return document.getElementById('g-recaptcha-response').value")
+            
             if response:
-                logger.info("CAPTCHA решена")
                 break
-            sleep(1)
-            logger.info(f"Ожидание... {i+1}/30 секунд")
-            driver.save_screenshot("waiting.png")
-            try:
-                challenge_iframe = driver.find_element(By.CSS_SELECTOR, "iframe[title='recaptcha challenge expires in two minutes']")
-                driver.switch_to.frame(challenge_iframe)
-                try:
-                    reset_button = driver.find_element(By.ID, "reset-button")
-                    reset_button.click()
-                    logger.info("Clicked reset button")
+            logger.info(f"Попытка решения капчи {j+1}/3")
+            wait = WebDriverWait(driver, 10)
+            iframe = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "iframe[title='reCAPTCHA']")))
+            driver.switch_to.frame(iframe)
+            recaptcha_checkbox = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "recaptcha-checkbox-border")))
+            recaptcha_checkbox.click()
+            driver.switch_to.default_content()
+            logger.info("Ожидание решения капчи...")
+            for i in range(30):
+                response = driver.execute_script("return document.getElementById('g-recaptcha-response').value")
+                if response:
+                    logger.info("CAPTCHA решена")
                     break
+                sleep(1)
+                logger.info(f"Ожидание... {i+1}/30 секунд")
+                driver.save_screenshot("waiting.png")
+                try:
+                    challenge_iframe = driver.find_element(By.CSS_SELECTOR, "iframe[title='recaptcha challenge expires in two minutes']")
+                    driver.switch_to.frame(challenge_iframe)
+                    try:
+                        reset_button = driver.find_element(By.ID, "reset-button")
+                        reset_button.click()
+                        logger.info("Clicked reset button")
+                        break
+                    except:
+                        pass
+                    help_button = WebDriverWait(driver, 1).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".button-holder.help-button-holder")))
+                    help_button.click()
+                    logger.info("Clicked autosolve button")
                 except:
                     pass
-                help_button = WebDriverWait(driver, 1).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".button-holder.help-button-holder")))
-                help_button.click()
-                logger.info("Clicked autosolve button")
-            except:
-                pass
-            finally:
-                driver.switch_to.default_content()
-    else:
-        logger.warn("Капча не была решена автоматически")
+                finally:
+                    driver.switch_to.default_content()
+    except Exception as e:
+        logger.error(f"Ошибка при решении капчи: {traceback.format_exc()}")
+        resp["res"] = False
     # Пытаемся нажать кнопку регистрации
     try:
         submit_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit'], input[type='submit']")
@@ -80,12 +84,14 @@ def create_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, invite: str,
         driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div/div/div/div/div/div/div")
         driver.save_screenshot("complete.png")
         logger.info("Регистрация удалась")
+        resp["res"] = True
         return True
     except:
         logger.error("Регистрация не удалась")
         # Screenshot for debugging
         driver.save_screenshot("registration_error.png")
         logger.info("Скриншот сохранен как registration_error.png")
+        resp["res"] = False
         return False
 
 def verify_email(driver: webdriver.Chrome, logger: ThreadSafeLogger, link: str, email: str, password: str, result: dict):
@@ -128,20 +134,25 @@ def wait_for_mail(logger: ThreadSafeLogger, imap_client: ImapClient, verify_link
 def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, imap_client: ImapClient, invite: str, email: str, password: str, name: str, birthday: str, learn_place: str, grade: int, res: dict = {}):
     logger.info("Start registration process")
 
+    resp = {"res": False}
     verify_link = {}
     email_thread = Thread(target=wait_for_mail, args=(logger, imap_client, verify_link), name="EmailThread")
-    selenium_thread = Thread(target=create_user, args=(driver, logger, invite, email, password, name, birthday, learn_place, grade), name="CreateUserThread")
+    selenium_thread = Thread(target=create_user, args=(driver, logger, invite, email, password, name, birthday, learn_place, grade, resp), name="CreateUserThread")
     
     selenium_thread.start()
     email_thread.start()
     
     selenium_thread.join()
+    if resp["res"] is False:
+        logger.error("User creation failed, aborting verification")
+        res["success"] = False
+        return False
     email_thread.join()
 
     link = verify_link.get('url', None)
     if link is None:
         logger.error("Failed to get verification link from email")
-        res["result"] = False
+        res["success"] = False
         return False
     result = {}
     
@@ -151,11 +162,11 @@ def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, imap_clien
     
     if result.get('verified', False):
         logger.info("User created and verified successfully")
-        res["result"] = True
+        res["success"] = True
         return True
     else:
         logger.error("User created but verification failed")
-        res["result"] = False
+        res["success"] = False
         return False
     
 

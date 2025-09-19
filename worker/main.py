@@ -22,7 +22,6 @@ def update_logs(client: WorkerClient, logger: ThreadSafeLogger, task_uuid: str, 
         sleep(3)
         logs = logger.get_full_log()
         logs = dumps(logs.split("\n"))
-        print("logs", logs)
         client.change_status(task_uuid=task_uuid, payload=dumps(res), logs=logs, status=dumps({"status": res.get("status"), "details": res.get("details", {})}), unix_time=int(time()))
         if res.get("status") is True:
             client.change_status(task_uuid=task_uuid, payload=dumps(res), logs=logs, status=dumps({"status": res.get("status"), "details": res.get("details", {})}), unix_time=int(time()))
@@ -75,7 +74,7 @@ def main():
         t = Thread(target=register_user, args=(driver, logger, imap_client, au["invite"], au["email"], au["password"], au["name"], au["birthday"], au["learn_place"], au["grade"], res), name="WorkThread")
         t.start()
         t.join()
-    else: 
+    else:
         logger.error(f"Unknown task type: {task.task}")
         client.change_status(task_uuid=task.uuid, payload=dumps({"error": f"Unknown task type: {task.task}"}), logs=logger.get_full_log(), status="error", unix_time=int(time()))
 

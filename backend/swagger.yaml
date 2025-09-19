@@ -1,0 +1,408 @@
+openapi: 3.0.3
+info:
+  title: CP Ultimate Money Control API
+  description: API для системы контроля задач и воркеров
+  version: 1.0.0
+  contact:
+    name: API Support
+servers:
+  - url: http://localhost:8080
+    description: Development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message
+
+    WorkerRegistrationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 6
+          maxLength: 6
+          description: Имя воркера (ровно 6 символов)
+      required:
+        - name
+
+    WorkerRegistrationResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID зарегистрированного воркера
+      required:
+        - uuid
+
+    WorkerStatusUpdateRequest:
+      type: object
+      properties:
+        worker_uuid:
+          type: string
+          format: uuid
+          description: UUID воркера
+        logs:
+          type: array
+          items:
+            type: string
+          description: Массив строк логов
+        status:
+          type: string
+          description: Текстовый статус
+        payload:
+          type: object
+          description: Произвольный JSON payload
+      required:
+        - worker_uuid
+        - status
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: ok
+      required:
+        - message
+
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: JWT access токен
+      required:
+        - access_token
+
+    RefreshResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: Новый JWT access токен
+      required:
+        - access_token
+
+    TaskCreateRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Тип задачи
+        payload:
+          type: object
+          description: Произвольный JSON payload
+      required:
+        - type
+        - payload
+
+    TaskCreateResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID созданной задачи
+      required:
+        - uuid
+
+    TaskStatusResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: UUID задачи
+        payload_answer:
+          type: object
+          description: Ответ от задачи
+        payload_input:
+          type: object
+          description: Входные данные задачи
+        logs:
+          type: array
+          items:
+            type: string
+          description: Логи выполнения
+        status:
+          type: string
+          description: Статус задачи
+        last_update:
+          type: integer
+          format: int64
+          description: Время последнего обновления (Unix timestamp)
+      required:
+        - uuid
+        - status
+        - last_update
+
+paths:
+  # Группа endpoints: Воркер
+  /worker/register:
+    post:
+      tags:
+        - Воркер
+      summary: Регистрация воркера
+      description: Регистрирует нового воркера в системе
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkerRegistrationRequest'
+      responses:
+        '200':
+          description: Воркер успешно зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerRegistrationResponse'
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /worker/status:
+    post:
+      tags:
+        - Воркер
+      summary: Обновление статуса задачи воркером
+      description: Обновляет статус выполнения задачи воркером
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkerStatusUpdateRequest'
+      responses:
+        '200':
+          description: Статус успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Воркер не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # Группа endpoints: Конфигурационные (требуют JWT)
+  /auth/login:
+    post:
+      tags:
+        - Аутентификация
+      summary: Вход пользователя
+      description: Аутентификация пользователя по логину и паролю
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Успешная аутентификация
+          headers:
+            Set-Cookie:
+              description: HTTP-only cookie с refresh токеном
+              schema:
+                type: string
+                example: refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; HttpOnly; Secure; SameSite=Strict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Неверные учетные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Аутентификация
+      summary: Обновление токена
+      description: Обновляет access токен используя refresh токен из cookie
+      responses:
+        '200':
+          description: Токен успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshResponse'
+        '401':
+          description: Недействительный refresh токен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /task:
+    post:
+      tags:
+        - Задачи
+      summary: Добавить задачу
+      description: Создает новую задачу в системе
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreateRequest'
+      responses:
+        '200':
+          description: Задача успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskCreateResponse'
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Требуется аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Недостаточно прав доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /task/{uuid}:
+    get:
+      tags:
+        - Задачи
+      summary: Получить статус задачи
+      description: Возвращает информацию о задаче по её UUID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID задачи
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Информация о задаче получена успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskStatusResponse'
+        '401':
+          description: Требуется аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Недостаточно прав доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Задача не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Воркер
+    description: Операции связанные с воркерами
+  - name: Аутентификация
+    description: Операции аутентификации и авторизации
+  - name: Задачи
+    description: Управление задачами
