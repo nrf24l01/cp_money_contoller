@@ -8,8 +8,8 @@ import (
 
 type Task struct {
 	goorm.BaseModel
-	Type      string   `gorm:"type:varchar(100);not null"`
-	Payload   string   `gorm:"type:jsonb;not null"`
+	Type      string         `gorm:"type:varchar(100);not null"`
+	Payload   datatypes.JSON `gorm:"type:jsonb;not null"`
 }
 
 type TaskStatus struct {

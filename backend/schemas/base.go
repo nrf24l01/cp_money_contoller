@@ -24,3 +24,8 @@ var DefaultUnauthorizedErrorResponse = ErrorResponse{
 	Message: "Unauthorized",
 	Code:    http.StatusUnauthorized,
 }
+
+var DefaultNotFoundResponse = ErrorResponse{
+	Message: "Resource Not Found",
+	Code:    http.StatusNotFound,
+}
