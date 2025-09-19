@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/nrf24l01/cp_money_controller/handlers"
+	"github.com/nrf24l01/cp_money_controller/backend/handlers"
 )
 
 func RegisterRoutes(e *echo.Echo, h *handlers.Handler) {

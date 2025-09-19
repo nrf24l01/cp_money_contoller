@@ -24,14 +24,14 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cWorker.proto\x12\x06worker\"\x1d\n\x0fRegisterRequest\x12\n\n\x02id\x18\x01 \x01(\x04\"9\n\x10RegisterResponse\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x0b\n\x03key\x18\x02 \x01(\t\x12\n\n\x02id\x18\x03 \x01(\x04\"9\n\x0eGetTaskRequest\x12\x13\n\x0bworker_uuid\x18\x01 \x01(\t\x12\x12\n\nworker_key\x18\x02 \x01(\t\"Q\n\x0fGetTaskResponse\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x0c\n\x04task\x18\x02 \x01(\t\x12\x0f\n\x07payload\x18\x03 \x01(\t\x12\x11\n\tunix_time\x18\x04 \x01(\x04\"e\n\x13\x43hangeStatusRequest\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x0f\n\x07payload\x18\x02 \x01(\t\x12\x0c\n\x04logs\x18\x03 \x01(\t\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x11\n\tunix_time\x18\x05 \x01(\x04\"\"\n\x14\x43hangeStatusResponse\x12\n\n\x02ok\x18\x01 \x01(\x08\x32\xdb\x01\n\rWorkerService\x12\x43\n\x0eRegisterWorker\x12\x17.worker.RegisterRequest\x1a\x18.worker.RegisterResponse\x12:\n\x07GetTask\x12\x16.worker.GetTaskRequest\x1a\x17.worker.GetTaskResponse\x12I\n\x0c\x43hangeStatus\x12\x1b.worker.ChangeStatusRequest\x1a\x1c.worker.ChangeStatusResponseB+Z)github.com/nrf24l01/cp_money_controller/pbb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cWorker.proto\x12\x06worker\"\x1d\n\x0fRegisterRequest\x12\n\n\x02id\x18\x01 \x01(\x04\"9\n\x10RegisterResponse\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x0b\n\x03key\x18\x02 \x01(\t\x12\n\n\x02id\x18\x03 \x01(\x04\"9\n\x0eGetTaskRequest\x12\x13\n\x0bworker_uuid\x18\x01 \x01(\t\x12\x12\n\nworker_key\x18\x02 \x01(\t\"Q\n\x0fGetTaskResponse\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x0c\n\x04task\x18\x02 \x01(\t\x12\x0f\n\x07payload\x18\x03 \x01(\t\x12\x11\n\tunix_time\x18\x04 \x01(\x04\"e\n\x13\x43hangeStatusRequest\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x0f\n\x07payload\x18\x02 \x01(\t\x12\x0c\n\x04logs\x18\x03 \x01(\t\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x11\n\tunix_time\x18\x05 \x01(\x04\"\"\n\x14\x43hangeStatusResponse\x12\n\n\x02ok\x18\x01 \x01(\x08\x32\xdb\x01\n\rWorkerService\x12\x43\n\x0eRegisterWorker\x12\x17.worker.RegisterRequest\x1a\x18.worker.RegisterResponse\x12:\n\x07GetTask\x12\x16.worker.GetTaskRequest\x1a\x17.worker.GetTaskResponse\x12I\n\x0c\x43hangeStatus\x12\x1b.worker.ChangeStatusRequest\x1a\x1c.worker.ChangeStatusResponseB+Z)github.com/nrf24l01/cp_money_controller/backend/pbb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'Worker_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'Z)github.com/nrf24l01/cp_money_controller/pb'
+  _globals['DESCRIPTOR']._serialized_options = b'Z)github.com/nrf24l01/cp_money_controller/backend/pb'
   _globals['_REGISTERREQUEST']._serialized_start=24
   _globals['_REGISTERREQUEST']._serialized_end=53
   _globals['_REGISTERRESPONSE']._serialized_start=55

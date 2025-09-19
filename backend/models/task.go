@@ -14,9 +14,9 @@ type Task struct {
 
 type TaskStatus struct {
 	goorm.BaseModel
-	TaskID         uuid.UUID  `gorm:"column:task_id;not null"`
-	Task           *Task      `gorm:"foreignKey:TaskID;references:ID"`
+	TaskID         uuid.UUID       `gorm:"column:task_id;not null"`
+	Task           *Task           `gorm:"foreignKey:TaskID;references:ID"`
 	Logs           datatypes.JSON  `gorm:"type:jsonb;default:'[]'"`
-	Status         string     `gorm:"type:varchar(50);not null"`
+	Status         string          `gorm:"type:varchar(50);not null"`
 	Result         datatypes.JSON  `gorm:"type:jsonb"`
 }

@@ -1,4 +1,4 @@
-module github.com/nrf24l01/cp_money_controller
+module github.com/nrf24l01/cp_money_controller/backend
 
 go 1.24.6
 

@@ -15,7 +15,6 @@ type Config struct {
 	PGSSLMode     string
 	PGTimeZone    string
 
-	PasswordSalt            string
 	JWTAccessSecret         string
 	JWTRefreshSecret        string
 
@@ -29,7 +28,6 @@ func BuildConfigFromEnv() (*Config, error) {
 	cfg := &Config{
 		APPHost:          os.Getenv("APP_HOST"),
 
-		PasswordSalt:     os.Getenv("PASSWORD_SALT"),
 		JWTAccessSecret:  os.Getenv("JWT_ACCESS_SECRET"),
 		JWTRefreshSecret: os.Getenv("JWT_REFRESH_SECRET"),
 

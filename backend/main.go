@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/nrf24l01/cp_money_controller/core"
-	"github.com/nrf24l01/cp_money_controller/handlers"
-	"github.com/nrf24l01/cp_money_controller/models"
-	"github.com/nrf24l01/cp_money_controller/routes"
-	"github.com/nrf24l01/cp_money_controller/schemas"
+	"github.com/nrf24l01/cp_money_controller/backend/core"
+	"github.com/nrf24l01/cp_money_controller/backend/handlers"
+	"github.com/nrf24l01/cp_money_controller/backend/models"
+	"github.com/nrf24l01/cp_money_controller/backend/routes"
+	"github.com/nrf24l01/cp_money_controller/backend/schemas"
 	"github.com/nrf24l01/go-web-utils/echokit"
 
 	"github.com/go-playground/validator"
