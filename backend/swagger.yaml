@@ -110,6 +110,35 @@ components:
         - status
         - last_update
 
+    TaskUpdateRequest:
+      type: object
+      properties:
+        result:
+          type: object
+          description: Результат выполнения задачи (произвольный JSON)
+        status:
+          type: string
+          description: Новый статус задачи
+        logs:
+          type: array
+          items:
+            type: string
+          description: Логи выполнения задачи
+      required:
+        - status
+
+    TaskUpdateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Успешность обновления
+        message:
+          type: string
+          description: Сообщение о результате операции
+      required:
+        - success
+
 paths:
   # Группа endpoints: Конфигурационные (требуют JWT)
   /auth/login:
@@ -276,8 +305,70 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /worker/task/{uuid}:
+    put:
+      tags:
+        - Воркер
+      summary: Обновить статус задачи
+      description: Обновляет статус, результат и логи задачи (используется воркерами)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID задачи
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdateRequest'
+      responses:
+        '200':
+          description: Статус задачи успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskUpdateResponse'
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Требуется аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Недостаточно прав доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Задача не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 tags:
   - name: Аутентификация
     description: Операции аутентификации и авторизации
   - name: Задачи
     description: Управление задачами
+  - name: Воркер
+    description: API для воркеров

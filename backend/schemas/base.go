@@ -29,3 +29,12 @@ var DefaultNotFoundResponse = ErrorResponse{
 	Message: "Resource Not Found",
 	Code:    http.StatusNotFound,
 }
+
+var DefaultSuccessResponse = Message{
+	Status: "success",
+}
+
+var DefaultBadRequestResponse = ErrorResponse{
+	Message: "Bad Request",
+	Code:    http.StatusBadRequest,
+}
