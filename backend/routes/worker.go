@@ -11,7 +11,7 @@ import (
 func RegisterWorkerRoutes(e *echo.Echo, h *handlers.Handler) {
 	group := e.Group("/worker")
 
-	group.POST("/tasks/:uuid", h.WorkerTaskUpdateHandler, echokit.ValidationMiddleware(func() interface{} {
+	group.POST("/task/:uuid", h.WorkerTaskUpdateHandler, echokit.ValidationMiddleware(func() interface{} {
 		return &schemas.WorkerTaskUpdateRequest{}
 	}))
 }
