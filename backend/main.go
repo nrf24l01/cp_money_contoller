@@ -45,6 +45,14 @@ func main() {
 		e.Use(echoMw.Logger())
 	}
     e.Use(echoMw.Recover())
+	
+	e.Use(echoMw.CORSWithConfig(echoMw.CORSConfig{
+		AllowOrigins: []string{config.AllowOrigins},
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+		AllowCredentials: true,
+	}))
+	log.Printf("CORS allowed origins: %s", config.AllowOrigins)
 
 	e.GET("/ping", func(c echo.Context) error {
 		return c.JSON(200, schemas.Message{Status: "money controller is ok"})

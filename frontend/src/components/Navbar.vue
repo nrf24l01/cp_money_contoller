@@ -5,24 +5,51 @@
             <span class="text-lg font-bold">CP money controller</span>
         </div>
         <div class="flex space-x-4">
-            <router-link
-                v-for="link in links"
-                :key="link.name"
-                :to="link.to"
-                class="hover:underline"
-            >
-                {{ link.name }}
-            </router-link>
+            <template v-if="authStore.isAuthenticated">
+                <router-link
+                    v-for="link in authenticatedLinks"
+                    :key="link.name"
+                    :to="link.to"
+                    class="hover:underline"
+                >
+                    {{ link.name }}
+                </router-link>
+                <button @click="logout" class="hover:underline text-red-300">Logout</button>
+                <span class="text-sm text-gray-300 ml-2">{{ authStore.username }}</span>
+            </template>
+            <template v-else>
+                <router-link
+                    v-for="link in guestLinks"
+                    :key="link.name"
+                    :to="link.to"
+                    class="hover:underline"
+                >
+                    {{ link.name }}
+                </router-link>
+            </template>
         </div>
     </nav>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
-const links = ref([
-    { name: 'Home', to: '/' },
-    { name: 'About', to: '/about' },
-    { name: 'Contact', to: '/contact' }
+const router = useRouter()
+const authStore = useAuthStore()
+
+const authenticatedLinks = ref([
+    { name: 'Dashboard', to: '/' },
+    { name: 'Tasks', to: '/tasks' }
 ])
+
+const guestLinks = ref([
+    { name: 'Login', to: '/login' }
+])
+
+function logout() {
+    authStore.logout()
+    router.push('/login')
+}
 </script>
