@@ -136,8 +136,8 @@ def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, imap_clien
 
     resp = {"res": False}
     verify_link = {}
-    email_thread = Thread(target=wait_for_mail, args=(logger, imap_client, verify_link), name="EmailThread")
-    selenium_thread = Thread(target=create_user, args=(driver, logger, invite, email, password, name, birthday, learn_place, grade, resp), name="CreateUserThread")
+    email_thread = Thread(target=wait_for_mail, args=(logger, imap_client, verify_link), name="EmailThread", daemon=True)
+    selenium_thread = Thread(target=create_user, args=(driver, logger, invite, email, password, name, birthday, learn_place, grade, resp), name="CreateUserThread", daemon=True)
     
     selenium_thread.start()
     email_thread.start()
@@ -156,7 +156,7 @@ def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, imap_clien
         return False
     result = {}
     
-    verify_thread = Thread(target=verify_email, args=(driver, logger, link, email, password, result), name="VerifyEmailThread")
+    verify_thread = Thread(target=verify_email, args=(driver, logger, link, email, password, result), name="VerifyEmailThread", daemon=True)
     verify_thread.start()
     verify_thread.join()
     

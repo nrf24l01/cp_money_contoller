@@ -3,9 +3,10 @@ from os import getenv
 
 load_dotenv()
 
-# Socket server conifg
-WORKER_SERVER = getenv("WORKER_SERVER", "127.0.0.1:50051")
-WORKER_ID = getenv("WORKER_ID")
+# Server config
+WORKER_SERVER = getenv("WORKER_SERVER", "127.0.0.1")
+WORKER_TASK_QUEUE = getenv("WORKER_TASK_QUEUE", "task_queue")
+WORKER_SUBMIT_HOST = getenv("WORKER_SUBMIT_HOST", "http://127.0.0.1:1327")
 
 # IMAP config
 IMAP_HOST = getenv("IMAP_HOST")

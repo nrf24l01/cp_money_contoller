@@ -14,25 +14,47 @@ func (h *Handler) WorkerTaskUpdateHandler(c echo.Context) error {
 	body := c.Get("validatedBody").(*schemas.WorkerTaskUpdateRequest)
 	uuid := c.Param("uuid")
 
-	var taskStatus models.TaskStatus
-	if err := h.DB.Joins("Task").Where("Task.uuid = ?", uuid).First(&taskStatus).Error; err != nil {
+	var task models.Task
+	if err := h.DB.Where("id = ?", uuid).First(&task).Error; err != nil {
 		return c.JSON(http.StatusNotFound, schemas.DefaultNotFoundResponse)
 	}
 
-	taskStatus.Status = body.Status
-	if jsonBytes, err := json.Marshal(body.Result); err != nil {
-		return c.JSON(http.StatusBadRequest, schemas.DefaultBadRequestResponse)
+	var taskStatus models.TaskStatus
+	if err := h.DB.Where("task_id = ?", task.ID).First(&taskStatus).Error; err != nil {
+		// Create new TaskStatus if not found
+		taskStatus = models.TaskStatus{
+			TaskID: task.ID,
+			Status: body.Status,
+		}
+		if jsonBytes, err := json.Marshal(body.Result); err != nil {
+			return c.JSON(http.StatusBadRequest, schemas.DefaultBadRequestResponse)
+		} else {
+			taskStatus.Result = datatypes.JSON(jsonBytes)
+		}
+		if jsonBytes, err := json.Marshal(body.Logs); err != nil {
+			return c.JSON(http.StatusBadRequest, schemas.DefaultBadRequestResponse)
+		} else {
+			taskStatus.Logs = datatypes.JSON(jsonBytes)
+		}
+		if err := h.DB.Create(&taskStatus).Error; err != nil {
+			return c.JSON(http.StatusInternalServerError, schemas.DefaultInternalErrorResponse)
+		}
 	} else {
-		taskStatus.Result = datatypes.JSON(jsonBytes)
-	}
-	if jsonBytes, err := json.Marshal(body.Logs); err != nil {
-		return c.JSON(http.StatusBadRequest, schemas.DefaultBadRequestResponse)
-	} else {
-		taskStatus.Logs = datatypes.JSON(jsonBytes)
-	}
-	
-	if err := h.DB.Save(&taskStatus).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, schemas.DefaultInternalErrorResponse)
+		// Update existing TaskStatus
+		taskStatus.Status = body.Status
+		if jsonBytes, err := json.Marshal(body.Result); err != nil {
+			return c.JSON(http.StatusBadRequest, schemas.DefaultBadRequestResponse)
+		} else {
+			taskStatus.Result = datatypes.JSON(jsonBytes)
+		}
+		if jsonBytes, err := json.Marshal(body.Logs); err != nil {
+			return c.JSON(http.StatusBadRequest, schemas.DefaultBadRequestResponse)
+		} else {
+			taskStatus.Logs = datatypes.JSON(jsonBytes)
+		}
+		if err := h.DB.Save(&taskStatus).Error; err != nil {
+			return c.JSON(http.StatusInternalServerError, schemas.DefaultInternalErrorResponse)
+		}
 	}
 
 	return c.JSON(http.StatusOK, schemas.DefaultSuccessResponse)

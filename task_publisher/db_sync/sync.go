@@ -46,12 +46,21 @@ func (h *Handler) SyncTasks() {
 	log.Printf("Syncing tasks to RabbitMQ and Redis...")
 	for _, task := range tasks {
 		rmq_task := rabbitmq.Task{
+			UUID:      task.ID.String(),
 			Type:      task.Type,
 			Payload:   task.Payload,
 			SecretKey: task.SecretKey,
 		}
-		h.RMQ.AddTask(rmq_task)
-		h.Redis.AddIdToSet(task.ID.String())
+		err := h.RMQ.AddTask(rmq_task)
+		if err != nil {
+			log.Printf("Error adding task to RabbitMQ: %v", err)
+			continue
+		}
+		err = h.Redis.AddIdToSet(task.ID.String())
+		if err != nil {
+			log.Printf("Error adding task ID to Redis: %v", err)
+			continue
+		}
 	}
 	log.Printf("Task synchronization completed.")
 }
