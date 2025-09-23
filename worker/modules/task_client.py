@@ -1,7 +1,7 @@
 from json import loads
 from .rabbitMQ_client import RabbitMQClient
 from .logger import ThreadSafeLogger
-from requests import post
+from requests import put
 from time import sleep
 
 
@@ -32,7 +32,7 @@ class TaskClient(RabbitMQClient):
             "status": status,
             "unix_time": unix_time
         }
-        rq = post(self.submit_host+"/worker/task/"+task_uuid, json=json_payload)
+        rq = put(self.submit_host+"/worker/task/"+task_uuid, json=json_payload)
 
         if rq.status_code != 200:
             self.logger.error(f"Failed to update task status: {rq.status_code} - {rq.text}")
