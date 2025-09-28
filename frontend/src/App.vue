@@ -10,4 +10,5 @@ import Navbar from './components/Navbar.vue';
 
 <style>
 @import "tailwindcss";
+@import 'primeicons/primeicons.css';
 </style>

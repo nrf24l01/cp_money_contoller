@@ -15,26 +15,32 @@ const router = createRouter({
       name: 'Login',
       component: () => import('@/views/Login.vue'),
       meta: { guest: true }
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('@/views/NotFound.vue')
     }
   ],
 })
 
 // Navigation guard
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
-  
+
   // Check if the route requires authentication
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    // If not authenticated, redirect to login
     if (!authStore.isAuthenticated) {
-      next({ name: 'Login' })
+      // Пробуем обновить токен только один раз за сессию
+      if (!authStore.tokenRefreshed && await authStore.refreshToken()) {
+        next()
+      } else {
+        next({ name: 'Login' })
+      }
     } else {
       next()
     }
-  } 
-  // Check if the route is for guests only (like login)
-  else if (to.matched.some(record => record.meta.guest)) {
-    // If already authenticated, redirect to home
+  } else if (to.matched.some(record => record.meta.guest)) {
     if (authStore.isAuthenticated) {
       next({ name: 'Index' })
     } else {

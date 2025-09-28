@@ -17,6 +17,9 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(null)
   const user_id = ref(null)
   const username = ref(null)
+  const tokenRefreshed = ref(false) // Флаг для отслеживания попытки обновления
+  const rememberMe = ref(false)
+  const isAuthLoading = ref(false)
 
   const isAuthenticated = computed(() =>
     !!accessToken.value && !isTokenExpired(accessToken.value)
@@ -25,8 +28,10 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value ? { Authorization: 'Bearer ' + accessToken.value } : {}
   )
 
-  function setToken(token) {
+  function setToken(token, remember = false) {
     accessToken.value = token
+    rememberMe.value = remember
+    
     // Extract user_id and username from JWT
     if (token) {
       try {
@@ -47,8 +52,9 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = null
     user_id.value = null
     username.value = null
+    rememberMe.value = false
   }
-
+  
   // Add method to refresh token
   async function refreshToken() {
     try {
@@ -58,6 +64,8 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (error) {
       logout()
       return false
+    } finally {
+      tokenRefreshed.value = true // Отмечаем, что попытка была
     }
   }
 
@@ -69,13 +77,15 @@ export const useAuthStore = defineStore('auth', () => {
     authHeader,
     setToken,
     logout,
-    refreshToken
+    refreshToken,
+    tokenRefreshed
   }
 }, {
   persist: {
-    enabled: true,
-    strategies: [
-      { storage: sessionStorage }
-    ]
+    afterRestore: (ctx) => {
+      // Сбрасываем флаг после восстановления состояния,
+      // чтобы при первой загрузке проверка всегда была
+      ctx.store.tokenRefreshed = false
+    }
   }
 })
