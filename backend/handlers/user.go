@@ -58,15 +58,14 @@ func (h *Handler) RefreshAccessTokenHandler(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Invalid refresh token"})
 	}
 
-	userID := claims["sub"].(string)
-	username := claims["username"].(string)
+	userID := claims["user_id"].(string)
 
 	var user models.User
 	if err := h.DB.Where("id = ?", userID).First(&user).Error; err != nil {
 		return c.JSON(http.StatusUnauthorized, schemas.DefaultUnauthorizedErrorResponse)
 	}
 
-	access_token, err := jwtutil.GenerateAccessToken(userID, username, []byte(h.Config.JWTAccessSecret))
+	access_token, err := jwtutil.GenerateAccessToken(userID, user.Username, []byte(h.Config.JWTAccessSecret))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, schemas.DefaultInternalErrorResponse)
 	}
