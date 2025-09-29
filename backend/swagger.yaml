@@ -87,6 +87,9 @@ components:
           type: string
           format: uuid
           description: UUID задачи
+        type:
+          type: string
+          description: Тип задачи
         payload_answer:
           type: object
           description: Ответ от задачи
@@ -107,6 +110,7 @@ components:
           description: Время последнего обновления (Unix timestamp)
       required:
         - uuid
+        - type
         - status
         - last_update
 
@@ -139,6 +143,86 @@ components:
       required:
         - success
 
+    # Схема элемента шаблона типа задачи
+    TaskTypeTemplateField:
+      type: object
+      properties:
+        field_name:
+          type: string
+          description: Имя поля шаблона
+        field_hint:
+          type: string
+          description: Подсказка для поля
+        field_description:
+          type: string
+          description: Подробное описание или справка для поля
+      required:
+        - field_name
+      example:
+        field_name: "email"
+        field_hint: "Email получателя"
+        field_description: "Адрес электронной почты, на который будет отправлено уведомление"
+
+    # Запрос на создание типа задачи
+    TaskTypeCreateRequest:
+      type: object
+      properties:
+        task_name:
+          type: string
+          description: Читабельное имя типа задачи
+        task_type:
+          type: string
+          description: Внутренний идентификатор типа задачи
+        task_template:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskTypeTemplateField'
+          description: Массив описаний полей шаблона
+      required:
+        - task_name
+        - task_type
+        - task_template
+      example:
+        task_name: "Уведомление по email"
+        task_type: "email_notification"
+        task_template:
+          - field_name: "email"
+            field_hint: "Email получателя"
+            field_description: "Адрес электронной почты для отправки"
+          - field_name: "subject"
+            field_hint: "Тема сообщения"
+            field_description: "Краткая тема письма"
+
+    # Ответ с информацией о типе задачи
+    TaskTypeResponse:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        task_name:
+          type: string
+        task_type:
+          type: string
+        task_template:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskTypeTemplateField'
+      required:
+        - uuid
+        - task_name
+        - task_type
+      example:
+        uuid: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+        task_name: "Уведомление по email"
+        task_type: "email_notification"
+        task_template:
+          - field_name: "email"
+            field_hint: "Email получателя"
+            field_description: "Адрес электронной почты для отправки"
+          - field_name: "subject"
+            field_hint: "Тема сообщения"
+            field_description: "Краткая тема письма"
 paths:
   # Группа endpoints: Конфигурационные (требуют JWT)
   /auth/login:
@@ -212,6 +296,35 @@ paths:
                 $ref: '#/components/schemas/Error'
 
   /task:
+    get:
+      tags:
+        - Задачи
+      summary: Получить список задач
+      description: Возвращает список всех задач в системе
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список задач получен успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskStatusResponse'
+        '401':
+          description: Требуется аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
     post:
       tags:
         - Задачи
@@ -365,6 +478,230 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  # Эндпоинты для управления типами задач
+  /task/type:
+    get:
+      tags:
+        - Типы задач
+      summary: Получить список типов задач
+      description: Возвращает список всех доступных типов задач
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список типов задач получен успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskTypeResponse'
+        '401':
+          description: Требуется аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - Типы задач
+      summary: Создать новый тип задачи
+      description: Добавляет новый тип задачи в систему
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskTypeCreateRequest'
+      responses:
+        '201':
+          description: Тип задачи успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskTypeResponse'
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Требуется аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Недостаточно прав доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /task/type/{uuid}:
+    get:
+      tags:
+        - Типы задач
+      summary: Получить информацию о типе задачи
+      description: Возвращает информацию о типе задачи по его UUID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID типа задачи
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Информация о типе задачи получена успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskTypeResponse'
+        '401':
+          description: Требуется аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Недостаточно прав доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Тип задачи не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - Типы задач
+      summary: Обновить тип задачи
+      description: Обновляет информацию о типе задачи
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID типа задачи
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskTypeCreateRequest'
+      responses:
+        '200':
+          description: Тип задачи успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskTypeResponse'
+        '400':
+          description: Неверные данные запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Требуется аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Недостаточно прав доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Тип задачи не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Типы задач
+      summary: Удалить тип задачи
+      description: Удаляет тип задачи из системы
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID типа задачи
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Тип задачи успешно удален
+        '401':
+          description: Требуется аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Недостаточно прав доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Тип задачи не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 tags:
   - name: Аутентификация
     description: Операции аутентификации и авторизации
@@ -372,3 +709,5 @@ tags:
     description: Управление задачами
   - name: Воркер
     description: API для воркеров
+  - name: Типы задач
+    description: Управление типами задач

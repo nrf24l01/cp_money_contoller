@@ -38,3 +38,8 @@ var DefaultBadRequestResponse = ErrorResponse{
 	Message: "Bad Request",
 	Code:    http.StatusBadRequest,
 }
+
+var DefaultConflictResponse = ErrorResponse{
+	Message: "Conflict",
+	Code:    http.StatusConflict,
+}

@@ -9,4 +9,5 @@ func RegisterRoutes(e *echo.Echo, h *handlers.Handler) {
 	RegisterAuthRoutes(e, h)
 	RegisterTaskRoutes(e, h)
 	RegisterWorkerRoutes(e, h)
+	RegisterAuthRoutes(e, h)
 }

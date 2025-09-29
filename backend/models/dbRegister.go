@@ -20,7 +20,7 @@ func RegisterPostgres(cfg *core.Config) (*gorm.DB){
 
 	db.Exec(`CREATE EXTENSION IF NOT EXISTS "pgcrypto";`)
 
-	if err := db.AutoMigrate(&Task{}, &TaskStatus{}, &User{}); err != nil {
+	if err := db.AutoMigrate(&Task{}, &TaskStatus{}, &User{}, &TaskType{}); err != nil {
 		log.Fatalf("failed to migrate database: %v", err)
 	}
 
