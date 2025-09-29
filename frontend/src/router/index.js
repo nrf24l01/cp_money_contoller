@@ -20,6 +20,12 @@ const router = createRouter({
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
       component: () => import('@/views/NotFound.vue')
+    },
+    {
+      path: '/task_types',
+      name: 'TaskTypes',
+      component: () => import('@/views/TaskTypesList.vue'),
+      meta: { requiresAuth: true }
     }
   ],
 })

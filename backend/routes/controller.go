@@ -6,8 +6,8 @@ import (
 )
 
 func RegisterRoutes(e *echo.Echo, h *handlers.Handler) {
+	RegisterTaskTypeRoutes(e, h)
 	RegisterAuthRoutes(e, h)
 	RegisterTaskRoutes(e, h)
 	RegisterWorkerRoutes(e, h)
-	RegisterAuthRoutes(e, h)
 }
