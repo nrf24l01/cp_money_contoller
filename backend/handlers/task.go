@@ -85,3 +85,55 @@ func (h *Handler) GetTaskHandler(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, resp)
 }
+
+func (h *Handler) GetTasksHandler(c echo.Context) error {
+	var tasks []models.Task
+	if err := h.DB.Find(&tasks).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, schemas.DefaultInternalErrorResponse)
+	}
+
+	var statuses []models.TaskStatus
+	if err := h.DB.Find(&statuses).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, schemas.DefaultInternalErrorResponse)
+	}
+
+	statusMap := make(map[string]models.TaskStatus)
+	for _, ts := range statuses {
+		statusMap[ts.TaskID.String()] = ts
+	}
+
+	var responses []schemas.GetTaskResponse
+	for _, task := range tasks {
+		var logs []string
+		var status string
+		var result interface{}
+		var lastUpdate uint64
+
+		if ts, ok := statusMap[task.ID.String()]; ok {
+			if ts.Logs != nil {
+				json.Unmarshal(ts.Logs, &logs)
+			}
+			status = ts.Status
+			result = ts.Result
+			lastUpdate = uint64(ts.UpdatedAt.Unix())
+		} else {
+			status = "pending"
+			result = nil
+			logs = []string{}
+			lastUpdate = 0
+		}
+
+		resp := schemas.GetTaskResponse{
+			UUID:          task.ID.String(),
+			Type:          task.Type,
+			InputPayload:  task.Payload,
+			OutputPayload: result,
+			Logs:          logs,
+			Status:        status,
+			LastUpdate:    lastUpdate,
+		}
+		responses = append(responses, resp)
+	}
+
+	return c.JSON(http.StatusOK, responses)
+}
