@@ -6,13 +6,3 @@
         </main>
     </div>
 </template>
-
-<script>
-export default {
-    name: 'Index'
-}
-</script>
-
-<style scoped>
-/* Tailwind CSS is used in template classes */
-</style>

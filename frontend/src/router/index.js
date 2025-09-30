@@ -22,9 +22,27 @@ const router = createRouter({
       component: () => import('@/views/NotFound.vue')
     },
     {
+      path: '/task',
+      name: 'TasksList',
+      component: () => import('@/views/TasksList.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/task_types',
       name: 'TaskTypes',
       component: () => import('@/views/TaskTypesList.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/tasks',
+      name: 'Tasks',
+      component: () => import('@/views/TasksList.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/tasks/:uuid',
+      name: 'TaskDetails',
+      component: () => import('@/views/TaskDetails.vue'),
       meta: { requiresAuth: true }
     }
   ],

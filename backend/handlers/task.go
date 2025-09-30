@@ -137,3 +137,25 @@ func (h *Handler) GetTasksHandler(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, responses)
 }
+
+func (h *Handler) GetLogsHandler(c echo.Context) error {
+	task_uuid := c.Param("uuid")
+
+	var task models.Task
+	if err := h.DB.First(&task, "id = ?", task_uuid).Error; err != nil {
+		return c.JSON(http.StatusNotFound, schemas.DefaultNotFoundResponse)
+	}
+
+	var task_status models.TaskStatus
+	var logs []string
+	if err := h.DB.First(&task_status, "task_id = ?", task.ID).Error; err != nil {
+		// No status found, return empty logs
+		logs = []string{}
+	} else {
+		if task_status.Logs != nil {
+			json.Unmarshal(task_status.Logs, &logs)
+		}
+	}
+
+	return c.JSON(http.StatusOK, logs)
+}

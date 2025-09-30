@@ -143,6 +143,12 @@ components:
       required:
         - success
 
+    LogsResponse:
+      type: array
+      items:
+        type: string
+      description: Логи выполнения задачи
+
     # Схема элемента шаблона типа задачи
     TaskTypeTemplateField:
       type: object
@@ -453,6 +459,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '401':
+          description: Требуется аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Недостаточно прав доступа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Задача не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /task/{uuid}/logs:
+    get:
+      tags:
+        - Задачи
+      summary: Получить логи задачи
+      description: Возвращает логи выполнения задачи по её UUID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID задачи
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Логи задачи получены успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogsResponse'
         '401':
           description: Требуется аутентификация
           content:

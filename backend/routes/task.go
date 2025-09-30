@@ -12,9 +12,10 @@ func RegisterTaskRoutes(e *echo.Echo, h *handlers.Handler) {
 	group := e.Group("/task")
 	// group.Use(echokit.JWTMiddleware([]byte(h.Config.JWTAccessSecret)))
 
-	group.GET("/", h.GetTasksHandler)
-	group.POST("/", h.CreateTaskHandler, echokit.ValidationMiddleware(func() interface{} {
+	group.GET("", h.GetTasksHandler)
+	group.POST("", h.CreateTaskHandler, echokit.ValidationMiddleware(func() interface{} {
 		return &schemas.CreateTaskRequest{}
 	}))
 	group.GET("/:uuid", h.GetTaskHandler)
+	group.GET("/:uuid/logs", h.GetLogsHandler)
 }
