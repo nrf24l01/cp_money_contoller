@@ -162,12 +162,24 @@ components:
         field_description:
           type: string
           description: Подробное описание или справка для поля
+        field_type:
+          type: string
+          enum: [string, int, float, bool, json, array]
+          description: Тип поля (string, int, float, bool, json, array)
+          default: string
+        required:
+          type: boolean
+          description: Обязательное ли поле
+          default: true
       required:
         - field_name
+        - field_type
       example:
         field_name: "email"
         field_hint: "Email получателя"
         field_description: "Адрес электронной почты, на который будет отправлено уведомление"
+        field_type: "string"
+        required: true
 
     # Запрос на создание типа задачи
     TaskTypeCreateRequest:
@@ -195,9 +207,13 @@ components:
           - field_name: "email"
             field_hint: "Email получателя"
             field_description: "Адрес электронной почты для отправки"
+            field_type: "string"
+            required: true
           - field_name: "subject"
             field_hint: "Тема сообщения"
             field_description: "Краткая тема письма"
+            field_type: "string"
+            required: true
 
     # Ответ с информацией о типе задачи
     TaskTypeResponse:
@@ -226,9 +242,13 @@ components:
           - field_name: "email"
             field_hint: "Email получателя"
             field_description: "Адрес электронной почты для отправки"
+            field_type: "string"
+            required: true
           - field_name: "subject"
             field_hint: "Тема сообщения"
             field_description: "Краткая тема письма"
+            field_type: "string"
+            required: true
 paths:
   # Группа endpoints: Конфигурационные (требуют JWT)
   /auth/login:

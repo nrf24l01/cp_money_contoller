@@ -1,12 +1,26 @@
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
     <div class="max-w-7xl mx-auto">
-      <!-- Header with title and refresh button -->
+      <!-- Header with title and buttons -->
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-extrabold text-gray-800">Tasks List</h1>
-        <button @click="fetchTasks" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded px-4 py-2">
-          Refresh
-        </button>
+        <div class="flex space-x-3">
+          <router-link 
+            to="/tasks/create" 
+            class="bg-green-600 hover:bg-green-700 text-white font-semibold rounded px-4 py-2"
+          >
+            Create Task
+          </router-link>
+          <button 
+            @click="showCreateModal = true" 
+            class="bg-green-600 hover:bg-green-700 text-white font-semibold rounded px-4 py-2"
+          >
+            Quick Create
+          </button>
+          <button @click="fetchTasks" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded px-4 py-2">
+            Refresh
+          </button>
+        </div>
       </div>
 
       <!-- Alert notification -->
@@ -106,6 +120,13 @@
       :task-uuid="selectedTask?.uuid || ''"
       @close="showLogsModal = false"
     />
+
+    <!-- Create Task Modal -->
+    <TaskCreateModal
+      :visible="showCreateModal"
+      @close="showCreateModal = false"
+      @success="onTaskCreated"
+    />
   </div>
 </template>
 
@@ -114,6 +135,7 @@ import { ref, onMounted, computed } from 'vue'
 import api from '@/axios'
 import { useRouter } from 'vue-router'
 import TaskLogsModal from '@/components/TaskLogsModal.vue'
+import TaskCreateModal from '@/components/TaskCreateModal.vue'
 
 const tasks = ref([])
 const loading = ref(false)
@@ -122,6 +144,7 @@ const searchQuery = ref('')
 const statusFilter = ref('')
 const sortOrder = ref('desc')
 const showLogsModal = ref(false)
+const showCreateModal = ref(false)
 const selectedTask = ref(null)
 const router = useRouter()
 
@@ -205,6 +228,16 @@ function getStatusClass(status, payloadOutput = null) {
 // Format Unix timestamp to readable string
 function formatDate(ts) {
   return new Date(ts * 1000).toLocaleString()
+}
+
+// Handle task creation success
+function onTaskCreated(taskUuid) {
+  // Refresh tasks list
+  fetchTasks()
+  // Show success message
+  alert.value = { message: `Task created successfully! UUID: ${taskUuid}`, type: 'success' }
+  // Clear alert after timeout
+  setTimeout(() => (alert.value = { message: '', type: '' }), 5000)
 }
 
 onMounted(fetchTasks)

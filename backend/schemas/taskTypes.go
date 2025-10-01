@@ -10,6 +10,8 @@ type TaskTypeField struct {
 	FieldName        string `json:"field_name" bson:"field_name" validate:"required,min=1,max=50"`
 	FieldHint        string `json:"field_hint" bson:"field_hint" validate:"required,max=200"`
 	FieldDescription string `json:"field_description" bson:"field_description" validate:"max=500"`
+	FieldType        string `json:"field_type" bson:"field_type" validate:"required,oneof=string int float bool json array"`
+	Required         bool   `json:"required" bson:"required"`
 }
 
 type TaskTypeWithUUID struct {

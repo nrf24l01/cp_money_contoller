@@ -20,6 +20,24 @@
             <label class="block text-gray-600 mb-1">Field Hint</label>
             <input v-model="field.field_hint" placeholder="field_hint" class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" />
           </div>
+          <div>
+            <label class="block text-gray-600 mb-1">Field Type</label>
+            <select v-model="field.field_type" required class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+              <option value="string">String</option>
+              <option value="int">Integer</option>
+              <option value="float">Float</option>
+              <option value="bool">Boolean</option>
+              <option value="json">JSON</option>
+              <option value="array">Array</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-1">Required</label>
+            <label class="flex items-center">
+              <input v-model="field.required" type="checkbox" class="mr-2" />
+              <span class="text-sm">Field is required</span>
+            </label>
+          </div>
           <div class="sm:col-span-2">
             <label class="block text-gray-600 mb-1">Field Description</label>
             <input v-model="field.field_description" placeholder="field_description" class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" />
@@ -52,12 +70,12 @@ const emit = defineEmits({
 const newTask = ref({
   task_name: '',
   task_type: '',
-  task_template: [{ field_name: '', field_hint: '', field_description: '' }]
+  task_template: [{ field_name: '', field_hint: '', field_description: '', field_type: 'string', required: true }]
 })
 const creating = ref(false)
 
 function addField() {
-  newTask.value.task_template.push({ field_name: '', field_hint: '', field_description: '' })
+  newTask.value.task_template.push({ field_name: '', field_hint: '', field_description: '', field_type: 'string', required: true })
 }
 
 function removeField(index) {
@@ -73,7 +91,7 @@ async function submit() {
   try {
     await api.post('/task/type', newTask.value)
     emit('success', 'Task type created successfully!')
-    newTask.value = { task_name: '', task_type: '', task_template: [{ field_name: '', field_hint: '', field_description: '' }] }
+    newTask.value = { task_name: '', task_type: '', task_template: [{ field_name: '', field_hint: '', field_description: '', field_type: 'string', required: true }] }
   } catch (e) {
     console.error('Create failed', e)
     emit('error', 'Failed to create task type.')

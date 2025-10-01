@@ -43,6 +43,7 @@ const authStore = useAuthStore()
 const authenticatedLinks = ref([
     { name: 'Dashboard', to: '/' },
     { name: 'Tasks', to: '/tasks' },
+    { name: 'Create Task', to: '/tasks/create' },
     { name: 'Task types', to: '/task_types' }
 ])
 

@@ -42,8 +42,11 @@
                   <td class="px-4 py-2 text-gray-600">{{ type.task_type }}</td>
                   <td class="px-4 py-2">
                     <ul class="list-disc list-inside">
-                      <li v-for="field in type.task_template" :key="field.field_name">
-                        <span class="font-semibold">{{ field.field_name }}</span> - {{ field.field_hint }}
+                      <li v-for="field in type.task_template" :key="field.field_name" class="mb-1">
+                        <span class="font-semibold">{{ field.field_name }}</span>
+                        <span class="text-xs bg-gray-200 text-gray-700 px-1 rounded ml-1">{{ field.field_type || 'string' }}</span>
+                        <span v-if="field.required === false" class="text-xs bg-yellow-200 text-yellow-700 px-1 rounded ml-1">optional</span>
+                        - {{ field.field_hint }}
                       </li>
                     </ul>
                   </td>
