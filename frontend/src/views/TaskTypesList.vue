@@ -68,13 +68,15 @@
        </div>
       <!-- Modal for creating task type -->
       <transition name="fade">
-        <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div class="bg-white rounded-lg w-full max-w-2xl p-6">
-            <div class="flex justify-between items-center mb-4">
+        <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] flex flex-col shadow-xl">
+            <div class="flex justify-between items-center p-6 border-b flex-shrink-0">
               <h3 class="text-lg font-semibold">New Task Type</h3>
               <button @click="showModal = false" class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
             </div>
-            <TaskTypeForm @success="handleSuccess" @error="handleError" />
+            <div class="p-6 overflow-y-auto flex-1">
+              <TaskTypeForm @success="handleSuccess" @error="handleError" />
+            </div>
           </div>
         </div>
       </transition>
@@ -188,5 +190,11 @@ function handleError(msg) {
 </script>
 
 <style scoped>
-/* You can add component-specific styles here */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 </style>
