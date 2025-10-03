@@ -4,6 +4,4 @@ driver
 __pycache__
 *venv
 tmp
-*.html
-*.png
 .env
