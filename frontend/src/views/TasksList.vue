@@ -153,7 +153,13 @@ async function fetchTasks() {
   loading.value = true
   try {
     const res = await api.get('/task')
-    tasks.value = res.data
+    if (!res.data || res.data.length === 0) {
+      console.log('No tasks found')
+      alert.value = { message: 'No tasks found. Create a new task to get started!', type: 'info' }
+    } else {
+      tasks.value = res.data
+      alert.value = { message: '', type: '' }
+    }
   } catch (e) {
     console.error('Failed to fetch tasks', e)
     alert.value = { message: 'Failed to load tasks.', type: 'error' }

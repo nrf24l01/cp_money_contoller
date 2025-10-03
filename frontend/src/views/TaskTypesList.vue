@@ -98,7 +98,13 @@ async function fetchTaskTypes() {
   loading.value = true
   try {
     const response = await api.get('/task/type')
-    taskTypes.value = response.data
+    if (!response.data || response.data.length === 0) {
+      console.log('No tasks found')
+      alert.value = { message: 'No tasks found. Create a new task to get started!', type: 'info' }
+    } else {
+      taskTypes.value = response.data
+      alert.value = { message: '', type: '' }
+    }
   } catch (e) {
     console.error('Failed to fetch task types', e)
     alert.value = { message: 'Failed to load task types.', type: 'error' }
