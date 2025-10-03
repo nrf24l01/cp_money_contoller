@@ -6,7 +6,7 @@ export const useLogsStore = defineStore('logs', () => {
   const autoRefreshInterval = ref(parseInt(localStorage.getItem('logsAutoRefreshInterval')) || 5)
   
   // Включено ли автообновление
-  const autoRefreshEnabled = ref(JSON.parse(localStorage.getItem('logsAutoRefreshEnabled') || 'false'))
+  const autoRefreshEnabled = ref(JSON.parse(localStorage.getItem('logsAutoRefreshEnabled') || 'true'))
 
   function setAutoRefreshInterval(interval) {
     autoRefreshInterval.value = interval

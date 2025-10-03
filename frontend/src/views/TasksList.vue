@@ -20,6 +20,33 @@
           <button @click="fetchTasks" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded px-4 py-2">
             Refresh
           </button>
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="autoRefreshTasks"
+                :checked="tasksStore.autoRefreshEnabled"
+                @change="toggleAutoRefresh"
+                class="rounded focus:ring-2 focus:ring-blue-400"
+              />
+              <label for="autoRefreshTasks" class="text-gray-700">Auto-refresh</label>
+            </div>
+            
+            <div v-if="tasksStore.autoRefreshEnabled" class="flex items-center space-x-2">
+              <label for="refreshIntervalTasks" class="text-gray-600">Interval:</label>
+              <select
+                id="refreshIntervalTasks"
+                :value="tasksStore.autoRefreshInterval"
+                @change="updateRefreshInterval(parseInt($event.target.value))"
+                class="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                <option value="5">5 sec</option>
+                <option value="10">10 sec</option>
+                <option value="30">30 sec</option>
+                <option value="60">1 min</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -131,11 +158,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 import api from '@/axios'
 import { useRouter } from 'vue-router'
 import TaskLogsModal from '@/components/TaskLogsModal.vue'
 import TaskCreateModal from '@/components/TaskCreateModal.vue'
+import { useTasksStore } from '@/stores/tasksStore'
 
 const tasks = ref([])
 const loading = ref(false)
@@ -147,6 +175,9 @@ const showLogsModal = ref(false)
 const showCreateModal = ref(false)
 const selectedTask = ref(null)
 const router = useRouter()
+const tasksStore = useTasksStore()
+
+let refreshInterval = null
 
 // Fetch tasks from backend
 async function fetchTasks() {
@@ -246,7 +277,36 @@ function onTaskCreated(taskUuid) {
   setTimeout(() => (alert.value = { message: '', type: '' }), 5000)
 }
 
-onMounted(fetchTasks)
+// Функция для настройки автообновления
+function setupAutoRefresh() {
+  clearInterval(refreshInterval)
+  
+  if (tasksStore.autoRefreshEnabled) {
+    refreshInterval = setInterval(() => {
+      fetchTasks()
+    }, tasksStore.autoRefreshInterval * 1000)
+  }
+}
+
+// Обработчики изменения настроек автообновления
+function toggleAutoRefresh() {
+  tasksStore.setAutoRefreshEnabled(!tasksStore.autoRefreshEnabled)
+  setupAutoRefresh()
+}
+
+function updateRefreshInterval(interval) {
+  tasksStore.setAutoRefreshInterval(interval)
+  setupAutoRefresh()
+}
+
+onMounted(() => {
+  fetchTasks()
+  setupAutoRefresh()
+})
+
+onUnmounted(() => {
+  clearInterval(refreshInterval)
+})
 </script>
 
 <style scoped>
