@@ -42,7 +42,7 @@ def main():
             return
 
         payload = task["payload"]
-        au = payload["auth_data"]
+        au = payload
         
         logger.clear_log()  
         

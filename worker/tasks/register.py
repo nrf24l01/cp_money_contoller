@@ -80,6 +80,14 @@ def create_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, invite: str,
         logger.error(error_text[2:])
     except:
         logger.info("Регистрация прошла успешно или ошибка не найдена.")
+        
+    try:
+        submit_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit'], input[type='submit']")
+        submit_button.click()
+        logger.info("Форма отправлена!")
+    except Exception as e:
+        logger.warn(f"Не удалось найти кнопку отправки: {e}")
+        
     try:
         driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div/div/div/div/div/div/div")
         driver.save_screenshot("complete.png")
@@ -91,6 +99,12 @@ def create_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, invite: str,
         # Screenshot for debugging
         driver.save_screenshot("registration_error.png")
         logger.info("Скриншот сохранен как registration_error.png")
+        try:
+            error_blocks = driver.find_elements(By.CLASS_NAME, "error-block")
+            for error_block in error_blocks:
+                logger.error(f"Error block: {error_block.text}")
+        except Exception as e:
+            logger.error(f"Failed to find error blocks: {e}")
         resp["res"] = False
         return False
 
