@@ -91,7 +91,7 @@ def create_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, invite: str,
     try:
         driver.find_element(By.XPATH, "/html/body/div[1]/div[2]/div/div/div/div/div/div/div")
         driver.save_screenshot("complete.png")
-        logger.info("Регистрация удалась")
+        logger.info("Регистрация удалась, необходимо подтвердить email")
         resp["res"] = True
         return True
     except:
@@ -172,7 +172,13 @@ def register_user(driver: webdriver.Chrome, logger: ThreadSafeLogger, imap_clien
     
     verify_thread = Thread(target=verify_email, args=(driver, logger, link, email, password, result), name="VerifyEmailThread", daemon=True)
     verify_thread.start()
+    
+    logger.info("Waiting for email verification to complete")
     verify_thread.join()
+    logger.info("Email verification process completed")
+    logger.info("Waiting for email thread to finish")
+    email_thread.join()
+    logger.info("Email thread finished")
     
     if result.get('verified', False):
         logger.info("User created and verified successfully")
